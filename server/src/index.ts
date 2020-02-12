@@ -1,25 +1,16 @@
 import * as express from 'express';
-import { createConnection, getConnectionOptions } from 'typeorm';
-import { ApolloServer } from 'apollo-server-express';
-import { buildSchema } from 'type-graphql';
 
-import { UserResolver } from './resolvers';
+import connectToORM from './utils/connectToORM';
+import createApolloServer from './utils/createApolloServer';
 
 const port = 4000;
 
 (async () => {
+  await connectToORM();
+
   const app = express();
+  const apolloServer = await createApolloServer();
+  apolloServer.applyMiddleware({ app });
 
-  const connOptions = await getConnectionOptions('development');
-  await createConnection({ ...connOptions, name: 'default' });
-
-  const apollowServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [UserResolver]
-    }),
-    context: ({ req, res }) => ({ req, res })
-  });
-
-  apollowServer.applyMiddleware({ app });
-  app.listen(port, () => console.log(`Listening on port ${port}`));
+  app.listen(port, () => console.log(`Server running on localhost:${port}`));
 })();
