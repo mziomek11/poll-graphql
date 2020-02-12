@@ -2,11 +2,9 @@ import * as bcrypt from 'bcrypt';
 import { Resolver, Mutation, Arg, Query } from 'type-graphql';
 
 import User from '../entity/User';
-import { registerSchema } from '../validators/userSchema';
+import { registerSchema } from '../validators/authSchema';
 
 export const accountCreatedMessage = 'Account created';
-
-console.warn('Remove random query from there');
 
 @Resolver()
 export default class AuthResolver {

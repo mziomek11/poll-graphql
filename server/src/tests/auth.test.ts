@@ -1,3 +1,5 @@
+import { Connection } from 'typeorm';
+
 import request from '../testUtils/request';
 import { register } from '../testUtils/mutations';
 
@@ -9,8 +11,14 @@ const firstUsername = 'first_username';
 const firstEmail = 'first_email@something.com';
 const firstPassword = 'first_password';
 
+let conn: Connection;
+
 beforeAll(async () => {
-  await connectToORM();
+  conn = await connectToORM();
+});
+
+afterAll(async () => {
+  await conn.close();
 });
 
 describe('register', () => {

@@ -16,6 +16,10 @@ export default class User extends BaseEntity {
   @Column('varchar', { length: 255, unique: true })
   email: string;
 
+  @Field()
+  @Column('bool', { default: false })
+  confirmed: boolean;
+
   @Column('varchar', { length: 255 })
   password: string;
 }
