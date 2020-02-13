@@ -1,18 +1,18 @@
 import * as express from 'express';
+import { config as envConfig } from 'dotenv';
 
-import connectToORM from './utils/connectToORM';
-import createApolloServer from './utils/createApolloServer';
-
-export const port = 4000;
+import { connect } from './utils/typeORM';
+import { createApolloServer } from './utils/apollo';
 
 export const startServer = async () => {
-  const connection = await connectToORM();
+  envConfig();
+  const connection = await connect();
 
   const app = express();
   const apolloServer = await createApolloServer();
   apolloServer.applyMiddleware({ app });
 
-  const server = app.listen(port);
+  const server = app.listen(process.env.PORT);
 
   return { app, server, apolloServer, connection };
 };
