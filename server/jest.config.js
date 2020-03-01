@@ -1,5 +1,5 @@
 module.exports = {
-  globalSetup: './src/testUtils/globalSetup.js',
-  globalTeardown: './src/testUtils/globalTeardown.js',
+  globalSetup: './src/test-utils/globalSetup.js',
+  globalTeardown: './src/test-utils/globalTeardown.js',
   preset: 'ts-jest'
 };

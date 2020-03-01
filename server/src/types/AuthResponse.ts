@@ -1,7 +1,7 @@
 import { Field, ObjectType } from 'type-graphql';
 
 @ObjectType()
-export class AuthResponse {
+export default class AuthResponse {
   @Field()
   token: string;
 }

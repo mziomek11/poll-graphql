@@ -1,19 +1,14 @@
 import * as bcrypt from 'bcrypt';
-import { Resolver, Mutation, Arg, Query } from 'type-graphql';
+import { Resolver, Mutation, Arg } from 'type-graphql';
 
 import User from '../entity/User';
+import AuthError from '../errors/auth';
+import AuthResponse from '../types/AuthResponse';
 import { registerSchema, loginSchema } from '../validators/authSchema';
 import { signToken } from '../utils/auth';
-import { AuthResponse } from '../types/AuthResponse';
-import { AuthError } from '../errors/auth';
 
 @Resolver()
 export default class AuthResolver {
-  @Query(() => String)
-  async randomQuery() {
-    return 'random query';
-  }
-
   @Mutation(() => AuthResponse)
   async register(
     @Arg('email') email: string,
