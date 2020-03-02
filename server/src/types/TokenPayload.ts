@@ -1,5 +1,3 @@
-type TokenPayload = {
+export interface ITokenPayload {
   userId: string;
-};
-
-export default TokenPayload;
+}

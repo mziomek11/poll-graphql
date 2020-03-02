@@ -1,11 +1,11 @@
-import User from '../entity/User';
+import { User } from '../models/User';
 
-export const username = 'first_username';
-export const email = 'first_email@something.com';
-export const password = 'first_password';
+export const username = 'created_user_username';
+export const password = 'created_user_password';
+export const email = 'created_user_email';
 
-export async function createUser() {
-  const user = await User.create({ username, email, password }).save();
+export const createUser = async () => {
+  const user = await User.create({ email, username, password });
 
   return user;
-}
+};

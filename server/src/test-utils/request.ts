@@ -1,7 +1,7 @@
 import { GraphQLClient } from 'graphql-request';
 
 export default async function(gqlString: string, token?: string) {
-  const url = `${process.env.HOST}:${process.env.PORT}/graphql`;
+  const url = `http://localhost:${process.env.SERVER_PORT}/graphql`;
   const options = token
     ? { headers: { authorization: `Bearer ${token}` } }
     : {};

@@ -1,21 +1,22 @@
+import 'reflect-metadata';
 import * as express from 'express';
-import { config as envConfig } from 'dotenv';
 
-import { connect } from './utils/typeORM';
+import { connectMongoose } from './utils/db';
+import { setupEnvVariables } from './utils/env';
 import { createApolloServer } from './utils/apollo';
 
 export async function startServer() {
-  envConfig();
+  setupEnvVariables();
 
   const app = express();
-  const connection = await connect();
+  const connection = await connectMongoose();
   const apolloServer = await createApolloServer();
   apolloServer.applyMiddleware({ app });
 
-  const server = app.listen(process.env.PORT);
+  const server = app.listen(process.env.SERVER_PORT);
 
   if (process.env.NODE_ENV === 'development') {
-    console.log(`Server listening on ${process.env.HOST}:${process.env.PORT}`);
+    console.log(`Server listening on port ${process.env.SERVER_PORT}`);
   }
 
   return { app, server, apolloServer, connection };

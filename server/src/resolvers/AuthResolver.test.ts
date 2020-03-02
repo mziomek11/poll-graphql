@@ -1,114 +1,101 @@
-import { Connection } from 'typeorm';
-
 import request from '../test-utils/request';
 import { register, login } from '../test-utils/mutations';
 
-import User from '../entity/User';
-import { connect } from '../utils/typeORM';
+import { connectMongoose } from '../utils/db';
+import { User } from '../models/User';
+import { IConnection } from '../types/Connection';
+import { clearDatabase } from '../test-utils/clearDatabase';
 
 const firstUsername = 'first_username';
 const firstEmail = 'first_email@something.com';
 const firstPassword = 'first_password';
 
-let conn: Connection;
+let connection: IConnection;
 
-beforeAll(async done => {
-  conn = await connect();
-  done();
+beforeAll(async () => {
+  connection = await connectMongoose();
+  await clearDatabase();
 });
 
-afterAll(async done => {
-  await conn.close();
-  done();
+afterAll(async () => {
+  await connection.disconnect();
 });
 
 describe('register', () => {
-  test('add user to database', async done => {
+  test('add user to database', async () => {
     const mutation = register(firstUsername, firstEmail, firstPassword);
     await request(mutation);
 
     const createdUser = await User.findOne({
-      where: { username: firstUsername, email: firstEmail },
-      select: ['id']
+      username: firstUsername,
+      email: firstEmail
     });
     expect(createdUser).toBeTruthy();
-    done();
   });
 
-  test('created user have hashed password', async done => {
+  test('created user have hashed password', async () => {
     const createdUser = await User.findOne({
-      where: { username: firstUsername, email: firstEmail },
-      select: ['id']
+      username: firstUsername,
+      email: firstEmail
     });
 
     expect(createdUser?.password).not.toBe(firstPassword);
-    done();
   });
 
-  test('create second user', async done => {
+  test('create second user', async () => {
     const username = 'second_user';
     const email = 'second_user@something.com';
 
     const mutation = register(username, email, firstPassword);
     await request(mutation);
 
-    const createdUser = await User.findOne({
-      where: { username, email },
-      select: ['id']
-    });
+    const createdUser = await User.findOne({ username, email });
 
     expect(createdUser).toBeTruthy();
-    done();
   });
 
-  test('throw error when yup validation fails', async done => {
+  test('throw error when yup validation fails', async () => {
     const username = 'yup_test_username';
     const email = 'yup_test_email';
     const mutation = register(username, email, firstPassword);
 
     expect(request(mutation)).rejects.toThrow(Error);
-    done();
   });
 
-  test('throw error when username already exists', async done => {
+  test('throw error when username already exists', async () => {
     const email = 'anotheremail@smthing.com';
     const mutation = register(firstUsername, email, firstPassword);
 
     expect(request(mutation)).rejects.toThrow(Error);
-    done();
   });
 
-  test('throw error when email already exists', async done => {
+  test('throw error when email already exists', async () => {
     const username = 'anotherusername';
     const mutation = register(username, firstUsername, firstPassword);
 
     expect(request(mutation)).rejects.toThrow(Error);
-    done();
   });
 });
 
 describe('login', () => {
-  test('not throw error when provided valid credentials', async done => {
+  test('not throw error when provided valid credentials', async () => {
     const mutation = login(firstUsername, firstPassword);
     const res = await request(mutation);
 
     expect(res.login.token).toBeTruthy();
-    done();
   });
 
-  test('throw error when username does not exists', async done => {
+  test('throw error when username does not exists', async () => {
     const username = 'username_that_does_not_exists';
     const mutation = login(username, firstPassword);
 
     expect(request(mutation)).rejects.toThrow(Error);
-    done();
   });
 
-  test('throw error when password is wrong', async done => {
+  test('throw error when password is wrong', async () => {
     const password = 'wrong_password';
     const mutation = login(firstUsername, password);
 
     expect(request(mutation)).rejects.toThrow(Error);
-    done();
   });
 });

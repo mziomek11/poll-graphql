@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 
-type Context = {
+export interface IContext {
   req: Request;
   res: Response;
   payload?: { userId: string };
-};
-
-export default Context;
+}

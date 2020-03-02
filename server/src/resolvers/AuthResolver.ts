@@ -1,14 +1,19 @@
 import * as bcrypt from 'bcrypt';
-import { Resolver, Mutation, Arg } from 'type-graphql';
+import { Resolver, Mutation, Query, Arg } from 'type-graphql';
 
-import User from '../entity/User';
 import AuthError from '../errors/auth';
-import AuthResponse from '../types/AuthResponse';
+import AuthResponse from '../graphql-types/AuthResponse';
+import { User } from '../models/User';
 import { registerSchema, loginSchema } from '../validators/authSchema';
 import { signToken } from '../utils/auth';
 
 @Resolver()
 export default class AuthResolver {
+  @Query(() => [String])
+  async randomQuery() {
+    return ['1', '2'];
+  }
+
   @Mutation(() => AuthResponse)
   async register(
     @Arg('email') email: string,
@@ -25,18 +30,15 @@ export default class AuthResolver {
       throw err;
     }
 
-    const usernameAlreadyExists = await User.findOne({
-      where: { username },
-      select: ['id']
-    });
+    const usernameAlreadyExists = await User.findOne({ username });
     if (usernameAlreadyExists) throw new Error(AuthError.USERNAME_IN_USE);
 
-    const emailTaken = await User.findOne({ where: { email }, select: ['id'] });
+    const emailTaken = await User.findOne({ email });
     if (emailTaken) throw new Error(AuthError.EMAIL_IN_USE);
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = User.create({ email, username, password: hashedPassword });
-    await newUser.save();
+    const user = { email, username, password: hashedPassword };
+    const newUser = await User.create(user);
 
     const token = signToken(newUser.id);
 
@@ -54,10 +56,7 @@ export default class AuthResolver {
       throw err;
     }
 
-    const user = await User.findOne({
-      where: { username },
-      select: ['id', 'password']
-    });
+    const user = await User.findOne({ username });
     if (!user) throw new Error(AuthError.WRONG_CREDENTIALS);
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);

@@ -1,9 +1,9 @@
-import { Connection } from 'typeorm';
-
-import { connect } from '../utils/typeORM';
+import isAuth from './isAuth';
+import { connectMongoose } from '../utils/db';
 import { signToken } from '../utils/auth';
 import { createUser } from '../test-utils/createUser';
-import isAuth from './isAuth';
+import { clearDatabase } from '../test-utils/clearDatabase';
+import { IConnection } from '../types/Connection';
 
 const createResolverData = (headers: any): any => ({
   context: {
@@ -13,14 +13,15 @@ const createResolverData = (headers: any): any => ({
   }
 });
 
-let conn: Connection;
+let connection: IConnection;
 
 beforeAll(async () => {
-  conn = await connect();
+  connection = await connectMongoose();
+  await clearDatabase();
 });
 
 afterAll(async () => {
-  await conn.close();
+  await connection.disconnect();
 });
 
 describe('isAuth', () => {
