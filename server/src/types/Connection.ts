@@ -1,1 +1,1 @@
-export type IConnection = typeof import('mongoose');
+export type Connection = typeof import('mongoose');

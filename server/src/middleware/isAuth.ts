@@ -1,14 +1,16 @@
-import { MiddlewareFn } from 'type-graphql';
+import { MiddlewareFn, UnauthorizedError } from 'type-graphql';
 import { verify } from 'jsonwebtoken';
 
 import { IContext } from '../types/Context';
 import { ITokenPayload } from '../types/TokenPayload';
-import AuthError from '../errors/auth';
 
 const isAuth: MiddlewareFn<IContext> = async ({ context }, next) => {
   const authorization = context.req.headers.authorization;
 
-  if (!authorization) throw new Error(AuthError.ACCESS_DENIED);
+  if (!authorization) {
+    throw new UnauthorizedError();
+  }
+
   try {
     const token = authorization.split(' ')[1];
     const payload = verify(
@@ -17,7 +19,7 @@ const isAuth: MiddlewareFn<IContext> = async ({ context }, next) => {
     ) as ITokenPayload;
     context.payload = { userId: payload.userId };
   } catch (err) {
-    throw new Error(AuthError.ACCESS_DENIED);
+    throw new UnauthorizedError();
   }
 
   next();

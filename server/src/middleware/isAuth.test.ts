@@ -1,9 +1,9 @@
 import isAuth from './isAuth';
-import { connectMongoose } from '../utils/db';
+import { connectMongoose } from '../utils/database';
 import { signToken } from '../utils/auth';
-import { createUser } from '../test-utils/createUser';
-import { clearDatabase } from '../test-utils/clearDatabase';
-import { IConnection } from '../types/Connection';
+import { createUser } from '../testing/database/createUser';
+import { clearDatabase } from '../testing/database/clearDatabase';
+import { Connection } from '../types/Connection';
 
 const createResolverData = (headers: any): any => ({
   context: {
@@ -13,7 +13,7 @@ const createResolverData = (headers: any): any => ({
   }
 });
 
-let connection: IConnection;
+let connection: Connection;
 
 beforeAll(async () => {
   connection = await connectMongoose();
@@ -25,17 +25,17 @@ afterAll(async () => {
 });
 
 describe('isAuth', () => {
-  test('throw error when auth header not provided', () => {
+  test('throw error when auth header not provided', async () => {
     const resolverData = createResolverData({});
 
-    expect(isAuth(resolverData, jest.fn())).rejects.toThrow(Error);
+    await expect(isAuth(resolverData, jest.fn())).rejects.toThrow(Error);
   });
 
-  test('throw error when token is not valid', () => {
+  test('throw error when token is not valid', async () => {
     const headers = { authorization: 'Bearer not_valid_token' };
     const resolverData = createResolverData(headers);
 
-    expect(isAuth(resolverData, jest.fn())).rejects.toThrow(Error);
+    await expect(isAuth(resolverData, jest.fn())).rejects.toThrow(Error);
   });
 
   test('add userId to context payload and call next', async () => {

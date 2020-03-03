@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import * as express from 'express';
 
-import { connectMongoose } from './utils/db';
+import { connectMongoose } from './utils/database';
 import { setupEnvVariables } from './utils/env';
 import { createApolloServer } from './utils/apollo';
 

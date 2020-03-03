@@ -1,4 +1,4 @@
-const { clearDatabase } = require('./clearDatabase');
+const { clearDatabase } = require('../database/clearDatabase');
 
 module.exports = function() {
   clearDatabase()
