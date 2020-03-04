@@ -28,12 +28,15 @@ export default class AuthResolver {
 
   @Mutation(() => AuthResponse)
   async register(@Arg('input') { email, password, username }: RegisterInput) {
-    const usernameAlreadyExists = await User.findOne({ username });
+    const usernameAlreadyExists = await User.findOne({ username }).select(
+      '_id'
+    );
+
     if (usernameAlreadyExists) {
       throw new ArgumentValidationError([new UsernameInUseError()]);
     }
 
-    const emailTaken = await User.findOne({ email });
+    const emailTaken = await User.findOne({ email }).select('_id');
     if (emailTaken) {
       throw new ArgumentValidationError([new EmailInUseError()]);
     }
@@ -49,7 +52,7 @@ export default class AuthResolver {
 
   @Mutation(() => AuthResponse)
   async login(@Arg('input') { username, password }: LoginInput) {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }, 'password');
 
     if (!user) {
       throw new ArgumentValidationError([new WrongCredentialsError()]);
