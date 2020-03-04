@@ -18,19 +18,20 @@ afterAll(async () => {
 
 describe('AuthResolver', () => {
   describe('register', () => {
-    test('add user to database with hashed password', async () => {
+    const firstEmail = 'first_eMAil@somEThiNg.cOm';
+
+    test('add user to database with hashed password and lowercased email', async () => {
       const firstUsername = 'first_username';
-      const firstEmail = 'first_email@something.com';
       const firstPassword = 'first_password';
       const mutation = register(firstUsername, firstEmail, firstPassword);
       await request(mutation);
 
       const createdUser = await User.findOne({
-        username: firstUsername,
-        email: firstEmail
+        username: firstUsername
       });
 
       expect(createdUser).toBeTruthy();
+      expect(createdUser?.email).toBe(firstEmail.toLowerCase());
       expect(createdUser?.password).not.toBe(firstPassword);
     });
 
@@ -42,8 +43,7 @@ describe('AuthResolver', () => {
       await request(mutation);
 
       const createdUser = await User.findOne({
-        username: testUsername,
-        email: testEmail
+        username: testUsername
       });
 
       expect(createdUser).toBeTruthy();
@@ -64,12 +64,23 @@ describe('AuthResolver', () => {
       expect(err).toBeTruthy();
     });
 
-    test('throw error when email already exists', async () => {
-      const testUsername = 'anotherusername';
-      const mutation = register(testUsername, email, 'password');
-      const err = await getFunctionThrowedError(() => request(mutation));
+    describe('throw error when email already exists', () => {
+      test('exact email', async () => {
+        const testUsername = 'anotherusername';
+        const mutation = register(testUsername, email, 'password');
+        const err = await getFunctionThrowedError(() => request(mutation));
 
-      expect(err).toBeTruthy();
+        expect(err).toBeTruthy();
+      });
+
+      test('email with different letter casing', async () => {
+        const testUsername = 'anotherusername';
+        const testEmail = email.toUpperCase();
+        const mutation = register(testUsername, testEmail, 'password');
+        const err = await getFunctionThrowedError(() => request(mutation));
+
+        expect(err).toBeTruthy();
+      });
     });
   });
 

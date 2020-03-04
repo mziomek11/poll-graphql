@@ -7,28 +7,32 @@ import LoginInput from '../graphql-types/auth/LoginInput';
 import EmailInUseError from '../errors/auth/EmailInUse';
 import UsernameInUseError from '../errors/auth/UsernameInUse';
 import WrongCredentialsError from '../errors/auth/WrongCredentials';
-import { User } from '../models/User';
+import { User, IUserDataModel } from '../models/User';
 import { signToken } from '../utils/auth';
 
 @Resolver()
 export default class AuthResolver {
   @Mutation(() => GQLAuthResponse)
-  async register(@Arg('input') { email, password, username }: RegisterInput) {
-    const usernameAlreadyExists = await User.findOne({ username }).select(
-      '_id'
-    );
-
+  async register(
+    @Arg('input') { email, password, username }: RegisterInput
+  ): Promise<GQLAuthResponse> {
+    const usernameAlreadyExists = await User.findOne({ username }, 'id');
     if (usernameAlreadyExists) {
       throw new ArgumentValidationError([new UsernameInUseError()]);
     }
 
-    const emailTaken = await User.findOne({ email }).select('_id');
+    const lowerCasedEmail = email.toLowerCase();
+    const emailTaken = await User.findOne({ email: lowerCasedEmail }, 'id');
     if (emailTaken) {
       throw new ArgumentValidationError([new EmailInUseError()]);
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const userData = { email, username, password: hashedPassword };
+    const userData: IUserDataModel = {
+      username,
+      email: lowerCasedEmail,
+      password: hashedPassword
+    };
     const newUser = await User.create(userData);
 
     const token = signToken(newUser.id);
@@ -37,7 +41,9 @@ export default class AuthResolver {
   }
 
   @Mutation(() => GQLAuthResponse)
-  async login(@Arg('input') { username, password }: LoginInput) {
+  async login(
+    @Arg('input') { username, password }: LoginInput
+  ): Promise<GQLAuthResponse> {
     const user = await User.findOne({ username }, 'password');
 
     if (!user) {
