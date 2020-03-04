@@ -7,9 +7,9 @@ export interface IUserModel extends Document {
 }
 
 const UserSchema = new Schema({
-  email: { type: String },
-  username: { type: String },
-  password: { type: String }
+  email: String,
+  username: String,
+  password: String
 });
 
-export const User = model<IUserModel>('user', UserSchema);
+export const User = model<IUserModel>('User', UserSchema);
