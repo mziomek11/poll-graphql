@@ -1,16 +1,19 @@
 import { Schema, model, Document } from 'mongoose';
 
-import { IUserModel } from './User';
+export interface IPollOption {
+  text: string;
+  votes: number;
+}
 
 export interface IPollModel extends Document {
-  user: IUserModel | string;
+  userId: string;
   creationTime: Date;
   question: string;
-  options: { text: string; votes: number }[];
+  options: IPollOption[];
 }
 
 const PollSchema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User' },
+  userId: { type: Schema.Types.ObjectId, ref: 'User' },
   creationTime: { type: Date, default: Date.now },
   question: String,
   options: [{ text: String, votes: Number }]
