@@ -9,9 +9,11 @@ export const createApolloServer = async () => {
     resolvers: [AuthResolver, PollResolver]
   });
 
+  const debug = process.env.NODE_ENV !== 'production';
+
   return new ApolloServer({
     schema,
-    debug: false,
+    debug,
     context: ({ req, res }) => ({ req, res })
   });
 };

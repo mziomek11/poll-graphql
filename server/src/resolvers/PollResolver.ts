@@ -4,13 +4,19 @@ import {
   Arg,
   ArgumentValidationError,
   FieldResolver,
-  Root
+  Root,
+  UseMiddleware,
+  Mutation,
+  Ctx
 } from 'type-graphql';
 
 import PollDoesNotExistsError from '../errors/poll/PollDoesNotExists';
 import GQLPoll from '../graphql-types/poll/Poll';
+import GQLPollInput from '../graphql-types/poll/PollInput';
 import GQLUser from '../graphql-types/user/User';
-import { Poll, IPollModel } from '../models/Poll';
+import isAuth from '../middleware/isAuth';
+import { IContext } from '../types/Context';
+import { Poll, IPollModel, IPollDataModel, IPollOption } from '../models/Poll';
 import { User } from '../models/User';
 
 @Resolver(() => GQLPoll)
@@ -48,5 +54,28 @@ export default class PollResolver {
       id: poll.userId,
       username: user!.username
     };
+  }
+
+  @Mutation(() => GQLPoll)
+  @UseMiddleware(isAuth)
+  async createPoll(
+    @Arg('input') pollInput: GQLPollInput,
+    @Ctx() ctx: IContext
+  ): Promise<GQLPoll> {
+    const options: IPollOption[] = pollInput.options.map(option => ({
+      text: option,
+      votes: 0
+    }));
+
+    const pollData: Omit<IPollDataModel, 'creationTime'> = {
+      question: pollInput.question,
+      options,
+      userId: ctx.payload!.userId!
+    };
+
+    const { creationTime, id } = await Poll.create(pollData);
+    const responseData = { ...pollData, creationTime, id };
+
+    return responseData;
   }
 }

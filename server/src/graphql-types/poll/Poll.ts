@@ -1,21 +1,21 @@
 import { Field, ObjectType, ID } from 'type-graphql';
 
-import PollOption from './PollOption';
+import GQLPollOption from './PollOption';
 
 @ObjectType()
 export default class Poll {
-  @Field(() => ID)
+  @Field(() => ID, { nullable: true })
   id: string;
 
-  @Field(() => ID)
+  @Field(() => ID, { nullable: true })
   userId: string;
 
-  @Field()
+  @Field({ nullable: true })
   question: string;
 
-  @Field()
+  @Field({ nullable: true })
   creationTime: Date;
 
-  @Field(() => [PollOption])
-  options: PollOption[];
+  @Field(() => [GQLPollOption], { nullable: true })
+  options: GQLPollOption[];
 }

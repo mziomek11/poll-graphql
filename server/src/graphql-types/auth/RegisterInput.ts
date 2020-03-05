@@ -1,6 +1,8 @@
 import { Field, InputType } from 'type-graphql';
 import { MinLength, IsEmail, MaxLength } from 'class-validator';
 
+import { IUserDataModel } from '../../models/User';
+
 const usernameTooShort = 'Username must be at least 3 characters';
 const usernameTooLong = 'Username is too long';
 
@@ -11,7 +13,7 @@ const passwordTooShort = 'Password must be at least 3 characters';
 const passwordTooLong = 'Password is too long';
 
 @InputType()
-export default class RegisterInput {
+export default class RegisterInput implements IUserDataModel {
   @Field()
   @MinLength(3, { message: usernameTooShort })
   @MaxLength(30, { message: usernameTooLong })

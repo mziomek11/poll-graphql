@@ -31,7 +31,7 @@ describe('isAuth', () => {
       isAuth(resolverData, jest.fn())
     );
 
-    expect(err).toBeTruthy();
+    expect(err).toBeDefined();
   });
 
   test('throw error when token is not valid', async () => {
@@ -41,7 +41,7 @@ describe('isAuth', () => {
       isAuth(resolverData, jest.fn())
     );
 
-    expect(err).toBeTruthy();
+    expect(err).toBeDefined();
   });
 
   test('add userId to context payload and call next', async () => {

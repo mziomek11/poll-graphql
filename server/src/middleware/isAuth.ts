@@ -22,7 +22,7 @@ const isAuth: MiddlewareFn<IContext> = async ({ context }, next) => {
     throw new UnauthorizedError();
   }
 
-  next();
+  return next();
 };
 
 export default isAuth;

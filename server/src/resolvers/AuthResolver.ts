@@ -2,8 +2,8 @@ import * as bcrypt from 'bcrypt';
 import { Resolver, Mutation, Arg, ArgumentValidationError } from 'type-graphql';
 
 import GQLAuthResponse from '../graphql-types/auth/AuthResponse';
-import RegisterInput from '../graphql-types/auth/RegisterInput';
-import LoginInput from '../graphql-types/auth/LoginInput';
+import GQLRegisterInput from '../graphql-types/auth/RegisterInput';
+import GQLLoginInput from '../graphql-types/auth/LoginInput';
 import EmailInUseError from '../errors/auth/EmailInUse';
 import UsernameInUseError from '../errors/auth/UsernameInUse';
 import WrongCredentialsError from '../errors/auth/WrongCredentials';
@@ -14,7 +14,7 @@ import { signToken } from '../utils/auth';
 export default class AuthResolver {
   @Mutation(() => GQLAuthResponse)
   async register(
-    @Arg('input') { email, password, username }: RegisterInput
+    @Arg('input') { email, password, username }: GQLRegisterInput
   ): Promise<GQLAuthResponse> {
     const usernameAlreadyExists = await User.findOne({ username }, 'id');
     if (usernameAlreadyExists) {
@@ -42,7 +42,7 @@ export default class AuthResolver {
 
   @Mutation(() => GQLAuthResponse)
   async login(
-    @Arg('input') { username, password }: LoginInput
+    @Arg('input') { username, password }: GQLLoginInput
   ): Promise<GQLAuthResponse> {
     const user = await User.findOne({ username }, 'password');
 

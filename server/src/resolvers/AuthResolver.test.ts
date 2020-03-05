@@ -53,7 +53,7 @@ describe('AuthResolver', () => {
       const mutation = register('abcdcae', 'wrong_mail', 'asasdasd');
       const err = await getFunctionThrowedError(() => request(mutation));
 
-      expect(err).toBeTruthy();
+      expect(err).toBeDefined();
     });
 
     test('throw error when username already exists', async () => {
@@ -61,7 +61,7 @@ describe('AuthResolver', () => {
       const mutation = register(username, testEmail, 'password');
       const err = await getFunctionThrowedError(() => request(mutation));
 
-      expect(err).toBeTruthy();
+      expect(err).toBeDefined();
     });
 
     describe('throw error when email already exists', () => {
@@ -70,7 +70,7 @@ describe('AuthResolver', () => {
         const mutation = register(testUsername, email, 'password');
         const err = await getFunctionThrowedError(() => request(mutation));
 
-        expect(err).toBeTruthy();
+        expect(err).toBeDefined();
       });
 
       test('email with different letter casing', async () => {
@@ -79,7 +79,7 @@ describe('AuthResolver', () => {
         const mutation = register(testUsername, testEmail, 'password');
         const err = await getFunctionThrowedError(() => request(mutation));
 
-        expect(err).toBeTruthy();
+        expect(err).toBeDefined();
       });
     });
   });
@@ -96,14 +96,14 @@ describe('AuthResolver', () => {
       const mutation = login('username_that_does_not_exists', password);
       const err = await getFunctionThrowedError(() => request(mutation));
 
-      expect(err).toBeTruthy();
+      expect(err).toBeDefined();
     });
 
     test('throw error when password is wrong', async () => {
       const mutation = login(username, 'wrong_password');
       const err = await getFunctionThrowedError(() => request(mutation));
 
-      expect(err).toBeTruthy();
+      expect(err).toBeDefined();
     });
   });
 });
