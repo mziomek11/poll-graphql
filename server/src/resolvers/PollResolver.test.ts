@@ -1,6 +1,6 @@
 import request from '../testing/api/request';
 import { poll } from '../testing/api/queries';
-import { createPoll } from '../testing/api/mutations';
+import { createPoll, deletePoll } from '../testing/api/mutations';
 import { getFunctionThrowedError } from '../testing/other/getFunctionThrowedError';
 import { connectMongoose } from '../utils/database';
 import { User } from '../models/User';
@@ -97,6 +97,57 @@ describe('PollResolver', () => {
       const mutation = createPoll('question', ['need_at_least_2_options']);
       const err = await getFunctionThrowedError(() => request(mutation, token));
 
+      expect(err).toBeDefined();
+    });
+  });
+
+  describe('deletePoll', () => {
+    test('deletes poll and returns success message', async () => {
+      const pollToDelete = await Poll.create({
+        question: 'ab',
+        options: [],
+        userId
+      });
+      const token = signToken(userId);
+      const mutation = deletePoll(pollToDelete.id);
+      const res = await request(mutation, token);
+      expect(res.deletePoll).toBe('success');
+
+      const deletedPoll = await Poll.findOne({ id: pollToDelete.id });
+      expect(deletedPoll).toBe(null);
+    });
+
+    test('throw error when token is not valid', async () => {
+      const pollToDelete = await Poll.create({
+        question: 'ab',
+        options: [],
+        userId
+      });
+
+      const mutation = deletePoll(pollToDelete.id);
+      const err = await getFunctionThrowedError(() =>
+        request(mutation, 'token')
+      );
+      expect(err).toBeDefined();
+    });
+
+    test('throw error when poll does not exists', async () => {
+      const mutation = deletePoll('not_existing_poll');
+      const token = signToken(userId);
+      const err = await getFunctionThrowedError(() => request(mutation, token));
+      expect(err).toBeDefined();
+    });
+
+    test('throw error when user is not owner of poll', async () => {
+      const pollToDelete = await Poll.create({
+        question: 'ab',
+        options: [],
+        userId: '5e600251946b5d13fa43f002'
+      });
+
+      const token = signToken(userId);
+      const mutation = deletePoll(pollToDelete.id);
+      const err = await getFunctionThrowedError(() => request(mutation, token));
       expect(err).toBeDefined();
     });
   });

@@ -47,3 +47,9 @@ export const createPoll = (question: string, options: string[]) => `
     }
   }
 `;
+
+export const deletePoll = (id: string) => `
+  mutation {
+    deletePoll(id: "${id}")
+  }
+`;

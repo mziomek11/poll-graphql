@@ -8,6 +8,7 @@ import {
   UseMiddleware,
   Mutation,
   Ctx
+  // UnauthorizedError
 } from 'type-graphql';
 
 import PollDoesNotExistsError from '../errors/poll/PollDoesNotExists';
@@ -77,5 +78,25 @@ export default class PollResolver {
     const responseData = { ...pollData, creationTime, id };
 
     return responseData;
+  }
+
+  @Mutation(() => String)
+  @UseMiddleware(isAuth)
+  async deletePoll(
+    @Arg('id') id: string,
+    @Ctx() ctx: IContext
+  ): Promise<string> {
+    const pollData = {
+      _id: id,
+      userId: ctx.payload?.userId
+    };
+    const poll = await Poll.findOne(pollData, 'id');
+
+    if (!poll) {
+      throw new ArgumentValidationError([new PollDoesNotExistsError()]);
+    }
+
+    await Poll.deleteOne({ id });
+    return 'success';
   }
 }
