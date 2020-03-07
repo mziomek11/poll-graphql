@@ -1,6 +1,6 @@
 import request from '../testing/api/request';
 import { poll } from '../testing/api/queries';
-import { createPoll, deletePoll } from '../testing/api/mutations';
+import { createPoll, deletePoll, vote } from '../testing/api/mutations';
 import { getFunctionThrowedError } from '../testing/other/getFunctionThrowedError';
 import { connectMongoose } from '../utils/database';
 import { User } from '../models/User';
@@ -14,8 +14,8 @@ let userId: string;
 
 beforeAll(async () => {
   connection = await connectMongoose();
-  const user = await User.findOne({ username });
-  userId = user!.id;
+  const user = await User.findOne({ username }, 'id').lean();
+  userId = user!._id.toString();
 });
 
 afterAll(async () => {
@@ -33,20 +33,17 @@ describe('PollResolver', () => {
         ],
         userId
       };
+
       const createdPoll = await Poll.create(pollData);
       const query = poll(createdPoll.id);
       const res = await request(query);
 
-      expect(res).toEqual({
-        poll: {
-          ...pollData,
-          id: createdPoll.id,
-          user: {
-            id: userId,
-            username
-          }
-        }
-      });
+      expect(res.poll.question).toBe(pollData.question);
+      expect(res.poll.options).toEqual(pollData.options);
+      expect(res.poll.id).toBe(createdPoll._id.toString());
+      expect(res.poll.userId).toEqual(userId);
+      expect(res.poll.user.id).toBe(userId);
+      expect(res.poll.user.username).toBe(username);
     });
 
     test('throw error when poll does not exists', async () => {
@@ -65,19 +62,19 @@ describe('PollResolver', () => {
       const token = signToken(userId);
       const res = await request(mutation, token);
       const resData = res.createPoll;
-      const pollInDb = (await Poll.findById(resData.id)) as IPollModel;
-      const stringifiedUserId = JSON.stringify(userId);
+      const pollInDb = (await Poll.findById(resData.id).lean()) as IPollModel;
 
       expect(pollInDb.question).toBe(question);
-      expect(JSON.stringify(pollInDb.userId)).toEqual(stringifiedUserId);
+      expect(pollInDb.userId.toString()).toBe(userId);
       expect(pollInDb.options.length).toBe(2);
       expect(pollInDb.options[0].text).toBe('no');
       expect(pollInDb.options[0].votes).toBe(0);
       expect(pollInDb.options[1].text).toBe('yes');
       expect(pollInDb.options[1].votes).toBe(0);
+      expect(pollInDb.votedBy).toEqual([]);
 
       expect(resData.question).toBe(question);
-      expect(JSON.stringify(resData.userId)).toBe(stringifiedUserId);
+      expect(resData.userId).toBe(userId);
       expect(resData.options).toEqual([
         { text: 'no', votes: 0 },
         { text: 'yes', votes: 0 }
@@ -106,14 +103,15 @@ describe('PollResolver', () => {
       const pollToDelete = await Poll.create({
         question: 'ab',
         options: [],
+        votedBy: [],
         userId
       });
       const token = signToken(userId);
       const mutation = deletePoll(pollToDelete.id);
       const res = await request(mutation, token);
-      expect(res.deletePoll).toBe('success');
+      expect(res.deletePoll).toBe('Deleted');
 
-      const deletedPoll = await Poll.findOne({ id: pollToDelete.id });
+      const deletedPoll = await Poll.findOne({ id: pollToDelete.id }).lean();
       expect(deletedPoll).toBe(null);
     });
 
@@ -148,6 +146,73 @@ describe('PollResolver', () => {
       const token = signToken(userId);
       const mutation = deletePoll(pollToDelete.id);
       const err = await getFunctionThrowedError(() => request(mutation, token));
+      expect(err).toBeDefined();
+    });
+  });
+
+  describe('vote', () => {
+    const pollData = {
+      question: 'question_to_vote',
+      options: [
+        { text: 'yes', votes: 0 },
+        { text: 'no', votes: 0 }
+      ],
+      votedBy: [],
+      userId
+    };
+
+    test('increament voted option votes and add user to votedBy', async () => {
+      const createdPoll = await Poll.create(pollData);
+      const token = signToken(userId);
+      const mutation = vote(createdPoll.id, 'yes');
+      const res = await request(mutation, token);
+      const updatedPoll = await Poll.findById(createdPoll.id).lean();
+
+      expect(updatedPoll.options.length).toBe(2);
+      expect(updatedPoll.options[0].text).toBe('yes');
+      expect(updatedPoll.options[0].votes).toBe(1);
+      expect(updatedPoll.options[1].text).toBe('no');
+      expect(updatedPoll.options[1].votes).toBe(0);
+
+      expect(updatedPoll.votedBy.length).toBe(1);
+      expect(updatedPoll.votedBy[0].toString()).toBe(userId);
+
+      expect(res).toEqual({ vote: 'Voted' });
+    });
+
+    test('throw error when token is not valid', async () => {
+      const createdPoll = await Poll.create(pollData);
+      const mutation = vote(createdPoll.id, 'yes');
+      const err = await getFunctionThrowedError(() =>
+        request(mutation, 'not valid token')
+      );
+
+      expect(err).toBeDefined();
+    });
+
+    test('throw error when poll does not exists', async () => {
+      const token = signToken(userId);
+      const mutation = vote('not_existing_id', 'option');
+      const err = await getFunctionThrowedError(() => request(mutation, token));
+
+      expect(err).toBeDefined();
+    });
+
+    test('throw error when option does not exists', async () => {
+      const createdPoll = await Poll.create(pollData);
+      const token = signToken(userId);
+      const mutation = vote(createdPoll.id, 'not_existing_option');
+      const err = await getFunctionThrowedError(() => request(mutation, token));
+
+      expect(err).toBeDefined();
+    });
+
+    test('throw error when user already voted', async () => {
+      const createdPoll = await Poll.create({ ...pollData, votedBy: [userId] });
+      const token = signToken(userId);
+      const mutation = vote(createdPoll.id, 'yes');
+      const err = await getFunctionThrowedError(() => request(mutation, token));
+
       expect(err).toBeDefined();
     });
   });

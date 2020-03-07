@@ -53,3 +53,9 @@ export const deletePoll = (id: string) => `
     deletePoll(id: "${id}")
   }
 `;
+
+export const vote = (id: string, option: string) => `
+  mutation {
+    vote(id: "${id}", option: "${option}")
+  }
+`;

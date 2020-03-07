@@ -8,10 +8,11 @@ import {
   UseMiddleware,
   Mutation,
   Ctx
-  // UnauthorizedError
 } from 'type-graphql';
 
 import PollDoesNotExistsError from '../errors/poll/PollDoesNotExists';
+import OptionDoesNotExistsError from '../errors/poll/OptionDoesNotExists';
+import VotedTwiceError from '../errors/poll/VotedTwice';
 import GQLPoll from '../graphql-types/poll/Poll';
 import GQLPollInput from '../graphql-types/poll/PollInput';
 import GQLUser from '../graphql-types/user/User';
@@ -27,7 +28,7 @@ export default class PollResolver {
     let poll: IPollModel | null = null;
 
     try {
-      poll = await Poll.findById(pollId);
+      poll = await Poll.findById(pollId, '-votedBy');
     } catch (err) {
       throw new ArgumentValidationError([new PollDoesNotExistsError()]);
     }
@@ -68,7 +69,7 @@ export default class PollResolver {
       votes: 0
     }));
 
-    const pollData: Omit<IPollDataModel, 'creationTime'> = {
+    const pollData: Omit<IPollDataModel, 'creationTime' | 'votedBy'> = {
       question: pollInput.question,
       options,
       userId: ctx.payload!.userId!
@@ -90,13 +91,44 @@ export default class PollResolver {
       _id: id,
       userId: ctx.payload?.userId
     };
-    const poll = await Poll.findOne(pollData, 'id');
 
+    const poll = await Poll.findOne(pollData, 'id');
+    if (!poll) {
+      throw new ArgumentValidationError([new PollDoesNotExistsError()]);
+    }
+    await poll.remove();
+
+    return 'Deleted';
+  }
+
+  @Mutation(() => String)
+  @UseMiddleware(isAuth)
+  async vote(
+    @Arg('id') id: string,
+    @Arg('option') option: string,
+    @Ctx() ctx: IContext
+  ): Promise<string> {
+    const poll = await Poll.findOne({ _id: id }, 'options votedBy');
     if (!poll) {
       throw new ArgumentValidationError([new PollDoesNotExistsError()]);
     }
 
-    await Poll.deleteOne({ id });
-    return 'success';
+    const optionIndex = poll.options.findIndex(o => o.text === option);
+    if (optionIndex === -1) {
+      throw new ArgumentValidationError([new OptionDoesNotExistsError()]);
+    }
+
+    const userAlreadyVoted = poll.votedBy.find(
+      s => s.toString() === ctx.payload?.userId
+    );
+    if (userAlreadyVoted) {
+      throw new ArgumentValidationError([new VotedTwiceError()]);
+    }
+
+    poll.options[optionIndex].votes++;
+    poll.votedBy.push(ctx.payload?.userId!);
+    await poll.save();
+
+    return 'Voted';
   }
 }

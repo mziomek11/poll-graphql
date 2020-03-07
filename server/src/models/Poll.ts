@@ -5,6 +5,7 @@ export interface IPollDataModel {
   creationTime: Date;
   question: string;
   options: IPollOption[];
+  votedBy: string[];
 }
 
 export interface IPollOption {
@@ -18,7 +19,8 @@ const PollSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: 'User' },
   creationTime: { type: Date, default: Date.now },
   question: String,
-  options: [{ text: String, votes: Number }]
+  options: [{ text: String, votes: Number }],
+  votedBy: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 });
 
 export const Poll = model<IPollModel>('Poll', PollSchema);

@@ -6,7 +6,6 @@ import { ITokenPayload } from '../types/TokenPayload';
 
 const isAuth: MiddlewareFn<IContext> = async ({ context }, next) => {
   const authorization = context.req.headers.authorization;
-
   if (!authorization) {
     throw new UnauthorizedError();
   }
