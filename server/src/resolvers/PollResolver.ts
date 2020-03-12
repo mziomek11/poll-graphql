@@ -2,6 +2,7 @@ import {
   Resolver,
   Query,
   Arg,
+  Args,
   ArgumentValidationError,
   FieldResolver,
   Root,
@@ -15,6 +16,7 @@ import OptionDoesNotExistsError from '../errors/poll/OptionDoesNotExists';
 import VotedTwiceError from '../errors/poll/VotedTwice';
 import GQLPoll from '../graphql-types/poll/Poll';
 import GQLPollInput from '../graphql-types/poll/PollInput';
+import GQLGetPollsArgs from '../graphql-types/poll/GetPollsArgs';
 import GQLUser from '../graphql-types/user/User';
 import isAuth from '../middleware/isAuth';
 import { IContext } from '../types/Context';
@@ -46,6 +48,26 @@ export default class PollResolver {
     };
 
     return responseData;
+  }
+
+  @Query(() => [GQLPoll], { name: 'polls' })
+  async getPolls(@Args() { skip, limit }: GQLGetPollsArgs): Promise<GQLPoll[]> {
+    const polls = await Poll.find()
+      .limit(limit)
+      .skip(skip)
+      .sort('-creationTime');
+
+    const resData: GQLPoll[] = polls.map(
+      (poll: IPollModel): GQLPoll => ({
+        creationTime: poll.creationTime,
+        id: poll.id,
+        options: poll.options,
+        question: poll.question,
+        userId: poll.userId
+      })
+    );
+
+    return resData;
   }
 
   @FieldResolver(() => GQLUser, { name: 'user' })

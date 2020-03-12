@@ -1,5 +1,5 @@
 import request from '../testing/api/request';
-import { poll } from '../testing/api/queries';
+import { poll, polls } from '../testing/api/queries';
 import { createPoll, deletePoll, vote } from '../testing/api/mutations';
 import { getFunctionThrowedError } from '../testing/other/getFunctionThrowedError';
 import { connectMongoose } from '../utils/database';
@@ -48,6 +48,68 @@ describe('PollResolver', () => {
 
     test('throw error when poll does not exists', async () => {
       const query = poll('id_that_do_not_exists');
+      const err = await getFunctionThrowedError(() => request(query));
+
+      expect(err).toBeDefined();
+    });
+  });
+
+  describe('getPolls', () => {
+    const testPolls = new Array(7).fill(0).map((_, index) => ({
+      question: `Question ${index}`,
+      options: [
+        { text: `Q${index}O1`, votes: 0 },
+        { text: `Q${index}O2`, votes: 0 }
+      ],
+      votedBy: []
+    }));
+
+    beforeAll(async () => {
+      await Poll.deleteMany({});
+      const testPollsWithUserId = testPolls.map(p => ({ ...p, userId }));
+      for (const testPoll of testPollsWithUserId) {
+        await Poll.create(testPoll);
+      }
+    });
+
+    test('return polls when skip and limit are null', async () => {
+      const query = polls(null, null);
+      const res = await request(query);
+
+      expect(res.polls.length).toBeGreaterThan(0);
+    });
+
+    test('return 3 latest polls ', async () => {
+      const query = polls(null, 3);
+      const res = await request(query);
+
+      expect(res.polls.length).toBe(3);
+      const [p1, p2, p3] = res.polls;
+      expect(p1.question).toBe('Question 6');
+      expect(p2.question).toBe('Question 5');
+      expect(p3.question).toBe('Question 4');
+    });
+
+    test('skip 2 latest polls and return 3 after it', async () => {
+      const query = polls(2, 3);
+      const res = await request(query);
+
+      expect(res.polls.length).toBe(3);
+      const [p1, p2, p3] = res.polls;
+      expect(p1.question).toBe('Question 4');
+      expect(p2.question).toBe('Question 3');
+      expect(p3.question).toBe('Question 2');
+    });
+
+    test('return empty array when skip is bigger than polls in db', async () => {
+      const query = polls(8, 3);
+      const res = await request(query);
+
+      expect(res.polls.length).toBe(0);
+    });
+
+    test('throw error when data validation fails', async () => {
+      const query = polls(1, -1);
       const err = await getFunctionThrowedError(() => request(query));
 
       expect(err).toBeDefined();
