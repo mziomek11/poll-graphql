@@ -21,7 +21,6 @@ import GQLUser from '../graphql-types/user/User';
 import isAuth from '../middleware/isAuth';
 import { IContext } from '../types/Context';
 import { Poll, IPollModel, IPollDataModel, IPollOption } from '../models/Poll';
-import { User } from '../models/User';
 
 @Resolver(() => GQLPoll)
 export default class PollResolver {
@@ -53,6 +52,8 @@ export default class PollResolver {
   @Query(() => [GQLPoll], { name: 'polls' })
   async getPolls(@Args() { skip, limit }: GQLGetPollsArgs): Promise<GQLPoll[]> {
     const polls = await Poll.find()
+      .select('-votedBy')
+      .lean()
       .limit(limit)
       .skip(skip)
       .sort('-creationTime');
@@ -71,13 +72,11 @@ export default class PollResolver {
   }
 
   @FieldResolver(() => GQLUser, { name: 'user' })
-  async getPollUser(@Root() poll: GQLPoll): Promise<GQLUser> {
-    const user = await User.findById(poll.userId, 'username');
-
-    return {
-      id: poll.userId,
-      username: user!.username
-    };
+  async getPollUser(
+    @Root() { userId }: GQLPoll,
+    @Ctx() ctx: IContext
+  ): Promise<GQLUser> {
+    return ctx.userLoader.load(userId);
   }
 
   @Mutation(() => GQLPoll)
