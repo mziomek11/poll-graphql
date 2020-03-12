@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 const PollPage = () => {
   const params = useParams<{ id: string }>();
-  return <div>{params.id}</div>;
+  return <main>{params.id}</main>;
 };
 
 export default PollPage;
