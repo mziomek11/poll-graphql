@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import * as express from 'express';
+import * as cors from 'cors';
 
 import { connectMongoose } from './utils/database';
 import { setupEnvVariables } from './utils/env';
@@ -9,6 +10,7 @@ export async function startServer() {
   setupEnvVariables();
 
   const app = express();
+  app.use(cors());
   const connection = await connectMongoose();
   const apolloServer = await createApolloServer();
   apolloServer.applyMiddleware({ app });
