@@ -16,7 +16,7 @@ export const poll = (id: string) => `
   }
 `;
 
-export const polls = (skip: number | null, limit: number | null) => `
+export const polls = (skip: number, limit: number) => `
   query {
     polls(skip: ${skip}, limit: ${limit}){
       id,

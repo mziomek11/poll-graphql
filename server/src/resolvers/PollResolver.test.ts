@@ -72,15 +72,8 @@ describe('PollResolver', () => {
       }
     });
 
-    test('return polls when skip and limit are null', async () => {
-      const query = polls(null, null);
-      const res = await request(query);
-
-      expect(res.polls.length).toBeGreaterThan(0);
-    });
-
     test('return 3 latest polls ', async () => {
-      const query = polls(null, 3);
+      const query = polls(0, 3);
       const res = await request(query);
 
       expect(res.polls.length).toBe(3);
