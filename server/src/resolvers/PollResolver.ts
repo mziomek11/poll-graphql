@@ -61,7 +61,7 @@ export default class PollResolver {
     const resData: GQLPoll[] = polls.map(
       (poll: IPollModel): GQLPoll => ({
         creationTime: poll.creationTime,
-        id: poll.id,
+        id: poll._id,
         options: poll.options,
         question: poll.question,
         userId: poll.userId
