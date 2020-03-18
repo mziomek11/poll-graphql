@@ -1,20 +1,36 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
+
+import AppBar from '@material-ui/core/AppBar';
+import Box from '@material-ui/core/Box';
+import Link from '@material-ui/core/Link';
+
+import Navigation from './Navigation';
+import Grid from './Grid';
 
 const Header = () => {
   return (
-    <header>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/register">Register</Link>
-          </li>
-        </ul>
-      </nav>
-    </header>
+    <AppBar position="fixed">
+      <Grid>
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          minHeight={64}
+        >
+          <Link
+            color="inherit"
+            variant="h6"
+            underline="none"
+            component={RouterLink}
+            to="/"
+          >
+            Voter
+          </Link>
+          <Navigation />
+        </Box>
+      </Grid>
+    </AppBar>
   );
 };
 
