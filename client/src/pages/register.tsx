@@ -1,9 +1,16 @@
 import React from 'react';
 
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
+import Box from '@material-ui/core/Box';
 
-import LoadableButon from '../components/buttons/Loadable';
+import AuthHeading from '../components/auth/Heading';
+import AuthGrid from '../components/auth/Grid';
+import AuthUsernameTextField from '../components/auth/UsernameTextField';
+import AuthEmailTextField from '../components/auth/EmailTextField';
+import AuthPasswordTextField from '../components/auth/PasswordTextField';
+import AuthConfirmPasswordTextField from '../components/auth/ConfirmPasswordTextField';
+import AuthButton from '../components/auth/Button';
+import AuthRedirectText from '../components/auth/RedirectText';
+
 import useGraphqlForm from '../hooks/useGraphqlForm';
 import { register } from '../graphql/mutations';
 import { AuthResponse } from '../graphql/types';
@@ -34,60 +41,39 @@ const RegisterPage = () => {
   );
 
   return (
-    <main>
-      <Typography>Register</Typography>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          name="username"
-          id="username"
-          data-testid="username"
-          onChange={handleChange}
-          value={values.username}
-          error={!!errors.username}
-          helperText={errors.username}
-        />
+    <Box component="main" textAlign="center">
+      <AuthHeading>Create account</AuthHeading>
+      <AuthGrid>
+        <form onSubmit={handleSubmit}>
+          <AuthUsernameTextField
+            onChange={handleChange}
+            value={values.username}
+            errorText={errors.username}
+          />
 
-        <TextField
-          label="Email"
-          name="email"
-          id="email"
-          data-testid="email"
-          onChange={handleChange}
-          value={values.email}
-          error={!!errors.email}
-          helperText={errors.email}
-        />
+          <AuthEmailTextField
+            onChange={handleChange}
+            value={values.email}
+            errorText={errors.email}
+          />
 
-        <TextField
-          label="Password"
-          name="password"
-          id="password"
-          data-testid="password"
-          type="password"
-          onChange={handleChange}
-          value={values.password}
-          error={!!errors.password}
-          helperText={errors.password}
-        />
+          <AuthPasswordTextField
+            onChange={handleChange}
+            value={values.password}
+            errorText={errors.password}
+          />
 
-        <TextField
-          label="Confirm password"
-          name="confirmPassword"
-          id="confirmPassword"
-          data-testid="confirmPassword"
-          type="password"
-          onChange={handleChange}
-          value={values.confirmPassword}
-          error={!!errors.confirmPassword}
-          helperText={errors.confirmPassword}
-        />
+          <AuthConfirmPasswordTextField
+            onChange={handleChange}
+            value={values.confirmPassword}
+            errorText={errors.confirmPassword}
+          />
 
-        <LoadableButon type="submit" loading={loading}>
-          Register
-        </LoadableButon>
-      </form>
-    </main>
+          <AuthButton loading={loading}>Create</AuthButton>
+          <AuthRedirectText text="Already have an account? Login" to="/login" />
+        </form>
+      </AuthGrid>
+    </Box>
   );
 };
 

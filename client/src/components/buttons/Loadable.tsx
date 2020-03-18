@@ -9,7 +9,7 @@ type OwnProps = {
   loading: boolean;
 };
 
-type Props = ButtonProps & OwnProps;
+export type LoadableButtonProps = ButtonProps & OwnProps;
 
 const useStyles = makeStyles(theme => ({
   progress: {
@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const LoadableButton: React.FC<Props> = ({
+const LoadableButton: React.FC<LoadableButtonProps> = ({
   loading,
   children,
   ...buttonProps
