@@ -10,6 +10,7 @@ import AuthButton from '../components/auth/Button';
 import AuthRedirectText from '../components/auth/RedirectText';
 import AuthErrorText from '../components/auth/ErrorText';
 
+import useToken from '../hooks/useToken';
 import useGraphqlForm from '../hooks/useGraphqlForm';
 import { login } from '../graphql/mutations';
 import { AuthResponse } from '../graphql/types';
@@ -29,6 +30,7 @@ const initialErrors: LoginErrors = {
 };
 
 const LoginPage = () => {
+  const { setToken } = useToken();
   const {
     errors,
     handleChange,
@@ -39,7 +41,7 @@ const LoginPage = () => {
     initialValues,
     initialErrors,
     values => login(values.username, values.password),
-    res => console.log(res.login.token),
+    res => setToken(res.login.token),
     validateLogin
   );
 

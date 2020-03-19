@@ -1,14 +1,15 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Layout from './layout/Layout';
+import { TokenProvider } from './context/token';
 import { home, poll, notFound, register, login } from './pages';
 
 const App = () => {
   return (
-    <Fragment>
+    <TokenProvider>
       <CssBaseline />
       <BrowserRouter>
         <Layout>
@@ -21,7 +22,7 @@ const App = () => {
           </Switch>
         </Layout>
       </BrowserRouter>
-    </Fragment>
+    </TokenProvider>
   );
 };
 

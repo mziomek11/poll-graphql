@@ -11,6 +11,7 @@ import AuthConfirmPasswordTextField from '../components/auth/ConfirmPasswordText
 import AuthButton from '../components/auth/Button';
 import AuthRedirectText from '../components/auth/RedirectText';
 
+import useToken from '../hooks/useToken';
 import useGraphqlForm from '../hooks/useGraphqlForm';
 import { register } from '../graphql/mutations';
 import { AuthResponse } from '../graphql/types';
@@ -28,6 +29,7 @@ const initialValues: RegisterData = {
 };
 
 const RegisterPage = () => {
+  const { setToken } = useToken();
   const {
     errors,
     handleChange,
@@ -38,7 +40,7 @@ const RegisterPage = () => {
     initialValues,
     initialValues,
     values => register(values.username, values.email, values.password),
-    res => console.log(res.register.token),
+    res => setToken(res.register.token),
     validateRegister
   );
 
