@@ -5,10 +5,14 @@ import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 
-import Navigation from './Navigation';
+import LoggedInNavigation from './LoggedInNavigation';
+import LoggedOutNavigation from './LoggedOutNavigation';
 import Grid from './Grid';
+import useToken from '../hooks/useToken';
 
 const Header = () => {
+  const { token } = useToken();
+
   return (
     <AppBar position="fixed">
       <Grid>
@@ -27,7 +31,7 @@ const Header = () => {
           >
             Voter
           </Link>
-          <Navigation />
+          {token ? <LoggedInNavigation /> : <LoggedOutNavigation />}
         </Box>
       </Grid>
     </AppBar>
