@@ -1,11 +1,12 @@
-import validateRegister, {
+import validateRegister from './validateRegister';
+import {
   confirmPasswordRequired,
   emailRequired,
   emailNotValid,
   passwordNotMatch,
   passwordRequired,
   usernameRequired
-} from './validateRegister';
+} from '../messages';
 
 const validData = {
   username: 'a',

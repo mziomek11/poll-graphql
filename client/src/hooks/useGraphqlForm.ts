@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 import useFormValues from './useFormValues';
 import { fetchGQL } from '../utils/graphql';
@@ -9,11 +9,17 @@ export default function<Values, Errors, Response>(
   qglStringFn: (values: Values) => string,
   onSuccess: (response: Response) => void,
   clientValidationFn?: (values: Values) => Partial<Errors>
-) {
+): {
+  errors: Errors;
+  loading: boolean;
+  values: Values;
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
+} {
   const { handleChange, values } = useFormValues(initialValues);
   const [state, setState] = useState({ errors: initialErrors, loading: false });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setState({ errors: initialErrors, loading: true });
     if (clientValidationFn) {

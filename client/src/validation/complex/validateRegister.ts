@@ -1,12 +1,13 @@
 import isEmpty from '../simple/isEmpty';
 import isEmail from '../simple/isEmail';
-
-export const usernameRequired = 'Username is required';
-export const emailRequired = 'Email is required';
-export const emailNotValid = 'Email is not valid';
-export const passwordRequired = 'Password is required';
-export const confirmPasswordRequired = 'Confirm password is required';
-export const passwordNotMatch = 'Passwords do not match';
+import {
+  usernameRequired,
+  emailRequired,
+  emailNotValid,
+  passwordRequired,
+  confirmPasswordRequired,
+  passwordNotMatch
+} from '../messages';
 
 export type RegisterData = {
   confirmPassword: string;

@@ -18,6 +18,8 @@ import validateRegister, {
   RegisterData
 } from '../validation/complex/validateRegister';
 
+type RegisterResponse = { register: AuthResponse };
+
 const initialValues: RegisterData = {
   email: '',
   username: '',
@@ -32,11 +34,11 @@ const RegisterPage = () => {
     handleSubmit,
     values,
     loading
-  } = useGraphqlForm(
+  } = useGraphqlForm<RegisterData, RegisterData, RegisterResponse>(
     initialValues,
     initialValues,
-    ({ username, email, password }) => register(username, email, password),
-    (res: { register: AuthResponse }) => console.log(res.register.token),
+    values => register(values.username, values.email, values.password),
+    res => console.log(res.register.token),
     validateRegister
   );
 
