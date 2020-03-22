@@ -9,7 +9,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const Heading: React.FC = ({ children }) => {
+const PageHeading: React.FC = ({ children }) => {
   const classes = useStyles();
   return (
     <Typography variant="h3" className={classes.root}>
@@ -18,4 +18,4 @@ const Heading: React.FC = ({ children }) => {
   );
 };
 
-export default Heading;
+export default PageHeading;

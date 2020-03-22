@@ -1,4 +1,4 @@
-import validateRegister from './validateRegister';
+import validateRegister from './register';
 import {
   confirmPasswordRequired,
   emailRequired,
@@ -6,7 +6,7 @@ import {
   passwordNotMatch,
   passwordRequired,
   usernameRequired
-} from '../messages';
+} from './messages';
 
 const validData = {
   username: 'a',
@@ -16,7 +16,7 @@ const validData = {
 };
 
 describe('Validator validateRegister', () => {
-  test('return empty array when data is valid', () => {
+  test('return empty object when data is valid', () => {
     const result = validateRegister(validData);
 
     expect(Object.keys(result).length).toBe(0);

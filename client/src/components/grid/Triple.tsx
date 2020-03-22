@@ -6,7 +6,7 @@ type Props = {
   component?: React.ElementType;
 };
 
-const AuthGrid: React.FC<Props> = ({ children, component = 'div' }) => {
+const TripleGrid: React.FC<Props> = ({ children, component = 'div' }) => {
   return (
     <Grid container>
       <Grid item xs={1} sm={2} md={3} lg={4} />
@@ -18,4 +18,4 @@ const AuthGrid: React.FC<Props> = ({ children, component = 'div' }) => {
   );
 };
 
-export default AuthGrid;
+export default TripleGrid;

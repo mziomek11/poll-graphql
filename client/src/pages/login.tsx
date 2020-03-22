@@ -2,8 +2,8 @@ import React from 'react';
 
 import Box from '@material-ui/core/Box';
 
-import AuthHeading from '../components/auth/Heading';
-import AuthGrid from '../components/auth/Grid';
+import PageHeading from '../components/heading/Page';
+import TripleGrid from '../components/grid/Triple';
 import AuthUsernameTextField from '../components/auth/UsernameTextField';
 import AuthPasswordTextField from '../components/auth/PasswordTextField';
 import AuthButton from '../components/auth/Button';
@@ -14,7 +14,7 @@ import useToken from '../hooks/useToken';
 import useGraphqlForm from '../hooks/useGraphqlForm';
 import { login } from '../graphql/mutations';
 import { AuthResponse } from '../graphql/types';
-import validateLogin, { LoginData } from '../validation/complex/validateLogin';
+import validateLogin, { LoginData } from '../validation/login';
 
 type LoginErrors = { credentials: string } & LoginData;
 type LoginResponse = { login: AuthResponse };
@@ -40,15 +40,15 @@ const LoginPage = () => {
   } = useGraphqlForm<LoginData, LoginErrors, LoginResponse>(
     initialValues,
     initialErrors,
-    values => login(values.username, values.password),
+    values => login(values),
     res => setToken(res.login.token),
     validateLogin
   );
 
   return (
     <Box component="main" textAlign="center">
-      <AuthHeading>Login</AuthHeading>
-      <AuthGrid>
+      <PageHeading>Login</PageHeading>
+      <TripleGrid>
         <form onSubmit={handleSubmit}>
           <AuthUsernameTextField
             onChange={handleChange}
@@ -72,7 +72,7 @@ const LoginPage = () => {
             to="/register"
           />
         </form>
-      </AuthGrid>
+      </TripleGrid>
     </Box>
   );
 };

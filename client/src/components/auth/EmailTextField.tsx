@@ -1,9 +1,9 @@
 import React from 'react';
 
-import AuthTextField, { AuthTextFieldProps } from './TextField';
+import CustomTextField, { CustomTextFieldProps } from '../text-field/Custom';
 
-const AuthEmailTextField: React.FC<AuthTextFieldProps> = props => {
-  return <AuthTextField label="Email" name="email" id="email" {...props} />;
+const AuthEmailTextField: React.FC<CustomTextFieldProps> = props => {
+  return <CustomTextField label="Email" name="email" id="email" {...props} />;
 };
 
 export default AuthEmailTextField;

@@ -5,7 +5,7 @@ import NavigationLink from './NavigationLink';
 const LoggedOutNavigation = () => {
   return (
     <nav>
-      <NavigationLink to="/regiser">Register</NavigationLink>
+      <NavigationLink to="/register">Register</NavigationLink>
       <NavigationLink to="/login">Login</NavigationLink>
     </nav>
   );

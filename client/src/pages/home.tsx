@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { fetchGQL } from '../utils/graphql';
+import useQuery from '../hooks/useQuery';
+
+type Response = { polls: ResponsePoll[] };
 
 type ResponsePoll = {
   id: string;
@@ -28,12 +30,13 @@ const GET_POLLS = `
 `;
 
 const HomePage = () => {
+  const query = useQuery<Response>(GET_POLLS);
   const [polls, setPolls] = useState<ResponsePoll[] | null>(null);
   useEffect(() => {
-    fetchGQL<{ polls: ResponsePoll[] }>(GET_POLLS).then(({ data }) =>
-      setPolls(data!.polls)
-    );
-  }, []);
+    query().then(res => {
+      if (res.data) setPolls(res.data.polls);
+    });
+  }, [query]);
 
   return (
     <main>

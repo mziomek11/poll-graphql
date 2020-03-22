@@ -1,10 +1,10 @@
 import React from 'react';
 
-import AuthTextField, { AuthTextFieldProps } from './TextField';
+import CustomTextField, { CustomTextFieldProps } from '../text-field/Custom';
 
-const AuthPasswordTextField: React.FC<AuthTextFieldProps> = props => {
+const AuthPasswordTextField: React.FC<CustomTextFieldProps> = props => {
   return (
-    <AuthTextField
+    <CustomTextField
       label="Password"
       name="password"
       id="password"

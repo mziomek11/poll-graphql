@@ -1,5 +1,5 @@
-import validateLogin from './validateLogin';
-import { passwordRequired, usernameRequired } from '../messages';
+import validateLogin from './login';
+import { passwordRequired, usernameRequired } from './messages';
 
 const validData = {
   username: 'a',
@@ -7,7 +7,7 @@ const validData = {
 };
 
 describe('Validator validateLogin', () => {
-  test('return empty array when data is valid', () => {
+  test('return empty object when data is valid', () => {
     const result = validateLogin(validData);
 
     expect(Object.keys(result).length).toBe(0);

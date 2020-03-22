@@ -1,5 +1,4 @@
-import isEmpty from '../simple/isEmpty';
-import isEmail from '../simple/isEmail';
+import { isEmpty, isEmail } from '../utils/validation';
 import {
   usernameRequired,
   emailRequired,
@@ -7,7 +6,7 @@ import {
   passwordRequired,
   confirmPasswordRequired,
   passwordNotMatch
-} from '../messages';
+} from './messages';
 
 export type RegisterData = {
   confirmPassword: string;

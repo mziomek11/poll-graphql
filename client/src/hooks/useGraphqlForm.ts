@@ -1,12 +1,13 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 
 import useFormValues from './useFormValues';
-import { fetchGQL } from '../utils/graphql';
+import useQuery from './useQuery';
+import { hasKeys } from '../utils/object';
 
 export default function<Values, Errors, Response>(
   initialValues: Values,
   initialErrors: Errors,
-  qglStringFn: (values: Values) => string,
+  gqlStringFn: (values: Values) => string,
   onSuccess: (response: Response) => void,
   clientValidationFn?: (values: Values) => Partial<Errors>
 ): {
@@ -16,6 +17,7 @@ export default function<Values, Errors, Response>(
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => Promise<void>;
 } {
+  const query = useQuery<Response, Errors, Values>(gqlStringFn);
   const { handleChange, values } = useFormValues(initialValues);
   const [state, setState] = useState({ errors: initialErrors, loading: false });
 
@@ -24,7 +26,7 @@ export default function<Values, Errors, Response>(
     setState({ errors: initialErrors, loading: true });
     if (clientValidationFn) {
       const clientValidationErrs = clientValidationFn(values);
-      if (Object.keys(clientValidationErrs).length > 0) {
+      if (hasKeys(clientValidationErrs)) {
         setState({
           loading: false,
           errors: { ...initialErrors, ...clientValidationErrs }
@@ -33,8 +35,8 @@ export default function<Values, Errors, Response>(
       }
     }
 
-    const res = await fetchGQL<Response>(qglStringFn(values));
-    if (Object.keys(res.errors).length > 0) {
+    const res = await query(values);
+    if (hasKeys(res.errors)) {
       setState({ loading: false, errors: { ...initialErrors, ...res.errors } });
     } else onSuccess(res.data!);
   };

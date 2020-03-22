@@ -3,7 +3,7 @@ import { render } from '@testing-library/react';
 
 import Loadable from './Loadable';
 
-describe('LoadableButton componenet', () => {
+describe('Component LoadableButton', () => {
   test('render children', () => {
     const comp = (
       <Loadable loading={false}>

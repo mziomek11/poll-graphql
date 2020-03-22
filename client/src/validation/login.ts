@@ -1,5 +1,5 @@
-import isEmpty from '../simple/isEmpty';
-import { usernameRequired, passwordRequired } from '../messages';
+import { isEmpty } from '../utils/validation';
+import { usernameRequired, passwordRequired } from './messages';
 
 export type LoginData = {
   password: string;
