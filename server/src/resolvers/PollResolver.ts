@@ -8,7 +8,8 @@ import {
   Root,
   UseMiddleware,
   Mutation,
-  Ctx
+  Ctx,
+  Int
 } from 'type-graphql';
 
 import PollDoesNotExistsError from '../errors/poll/PollDoesNotExists';
@@ -69,6 +70,13 @@ export default class PollResolver {
     );
 
     return resData;
+  }
+
+  @Query(() => Int, { name: 'pollsCount' })
+  async getPollsCount(): Promise<number> {
+    const count = await Poll.estimatedDocumentCount();
+
+    return count;
   }
 
   @FieldResolver(() => GQLUser, { name: 'user' })

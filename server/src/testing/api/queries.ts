@@ -33,3 +33,9 @@ export const polls = (skip: number, limit: number) => `
     }
   }
 `;
+
+export const pollsCount = `
+  query {
+    pollsCount
+  }
+`;

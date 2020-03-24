@@ -1,5 +1,5 @@
 import request from '../testing/api/request';
-import { poll, polls } from '../testing/api/queries';
+import { poll, polls, pollsCount } from '../testing/api/queries';
 import { createPoll, deletePoll, vote } from '../testing/api/mutations';
 import { getFunctionThrowedError } from '../testing/other/getFunctionThrowedError';
 import { connectMongoose } from '../utils/database';
@@ -106,6 +106,27 @@ describe('PollResolver', () => {
       const err = await getFunctionThrowedError(() => request(query));
 
       expect(err).toBeDefined();
+    });
+  });
+
+  describe('getPollsCount', () => {
+    test('returns proper number', async () => {
+      await Poll.deleteMany({});
+      const testPolls = new Array(2).fill({
+        question: 'question',
+        options: [
+          { text: 'a', votes: 0 },
+          { text: 'b', votes: 0 }
+        ],
+        votedBy: [],
+        userId
+      });
+      for (const testPoll of testPolls) {
+        await Poll.create(testPoll);
+      }
+
+      const res = await request(pollsCount);
+      expect(res.pollsCount).toBe(2);
     });
   });
 
