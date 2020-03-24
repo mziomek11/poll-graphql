@@ -1,58 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState, useRef } from 'react';
 
+import Box from '@material-ui/core/Box';
+import Pagination from '@material-ui/lab/Pagination';
+import { makeStyles } from '@material-ui/core/styles';
+
+import PollList from '../components/poll/list/List';
+import TripleGrid from '../components/grid/Triple';
 import useQuery from '../hooks/useQuery';
+import { getPollsAndCount, GetPollsData } from '../graphql/queries';
+import { ResponseListPoll } from '../graphql/types';
 
-type Response = { polls: ResponsePoll[] };
-
-type ResponsePoll = {
-  id: string;
-  question: string;
-  options: { votes: number }[];
-  user: {
-    username: string;
-  };
+export type Response = { polls: ResponseListPoll[]; pollsCount: number };
+type State = {
+  polls: ResponseListPoll[];
+  loading: boolean;
+  page: number;
+  pollsCount: number;
 };
 
-const GET_POLLS = `
-  query {
-    polls(skip: 0, limit: 20){
-      id,
-      question,
-      options{
-        votes
-      },
-      user{
-        username
-      }
-    }
+const useStyles = makeStyles(theme => ({
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2)
   }
-`;
+}));
+
+export const pollsPerPage = 10;
 
 const HomePage = () => {
-  const query = useQuery<Response>(GET_POLLS);
-  const [polls, setPolls] = useState<ResponsePoll[] | null>(null);
+  const mounted = useRef(true);
+  const classes = useStyles();
+  const query = useQuery<Response, any, GetPollsData>(getPollsAndCount);
+  const [state, setState] = useState<State>({
+    polls: [],
+    loading: true,
+    page: 1,
+    pollsCount: 0
+  });
+
+  const { page, loading, polls, pollsCount } = state;
+
+  const changePage = async (page: number) => {
+    const res = await query({ page, perPage: pollsPerPage });
+    if (mounted.current && res.data) {
+      setState({ ...state, ...res.data, loading: false, page });
+      window.scrollTo({ top: 0 });
+    }
+  };
+
   useEffect(() => {
-    query().then(res => {
-      if (res.data) setPolls(res.data.polls);
-    });
-  }, [query]);
+    changePage(1);
+
+    return () => {
+      mounted.current = false;
+    };
+
+    // eslint-disable-next-line
+  }, []);
+
+  const handlePaginationChange = (_: any, val: number) => {
+    if (!loading && val !== page) {
+      setState({ ...state, loading: true });
+      changePage(val);
+    }
+  };
 
   return (
-    <main>
-      <h2>HomePage page</h2>
-      {polls ? (
-        <ul>
-          {polls.map(({ id, question }) => (
-            <li key={id}>
-              <Link to={`/poll/${id}`}>{question}</Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <h3>Loading polls...</h3>
-      )}
-    </main>
+    <TripleGrid>
+      <Box component="main" textAlign="center">
+        <PollList polls={polls} loading={loading} pollsPerPage={pollsPerPage} />
+
+        <Pagination
+          className={classes.pagination}
+          count={Math.ceil(pollsCount / pollsPerPage)}
+          page={page}
+          onChange={handlePaginationChange}
+        />
+      </Box>
+    </TripleGrid>
   );
 };
 
