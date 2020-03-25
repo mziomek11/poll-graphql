@@ -1,5 +1,5 @@
 import request from '../testing/api/request';
-import { poll, polls, pollsCount } from '../testing/api/queries';
+import { poll, polls, pollsCount, pollVoted } from '../testing/api/queries';
 import { createPoll, deletePoll, vote } from '../testing/api/mutations';
 import { getFunctionThrowedError } from '../testing/other/getFunctionThrowedError';
 import { connectMongoose } from '../utils/database';
@@ -127,6 +127,71 @@ describe('PollResolver', () => {
 
       const res = await request(pollsCount);
       expect(res.pollsCount).toBe(2);
+    });
+  });
+
+  describe('isPollVotedByUser', () => {
+    test('return true when user voted poll', async () => {
+      const token = signToken(userId);
+      const pollData = {
+        question: 'Example question',
+        options: [
+          { text: 'Option 1', votes: 10 },
+          { text: 'Option 2', votes: 15 }
+        ],
+        userId,
+        votedBy: [userId]
+      };
+
+      const createdPoll = await Poll.create(pollData);
+      const query = pollVoted(createdPoll.id);
+      const res = await request(query, token);
+
+      expect(res.pollVoted).toBe(true);
+    });
+
+    test('return false when user not voted poll', async () => {
+      const token = signToken(userId);
+      const pollData = {
+        question: 'Example question',
+        options: [
+          { text: 'Option 1', votes: 10 },
+          { text: 'Option 2', votes: 15 }
+        ],
+        userId,
+        votedBy: []
+      };
+
+      const createdPoll = await Poll.create(pollData);
+      const query = pollVoted(createdPoll.id);
+      const res = await request(query, token);
+
+      expect(res.pollVoted).toBe(false);
+    });
+
+    test('throw error when token not provided', async () => {
+      const pollData = {
+        question: 'Example question',
+        options: [
+          { text: 'Option 1', votes: 10 },
+          { text: 'Option 2', votes: 15 }
+        ],
+        userId,
+        votedBy: []
+      };
+
+      const createdPoll = await Poll.create(pollData);
+      const query = pollVoted(createdPoll.id);
+      const err = await getFunctionThrowedError(() => request(query));
+
+      expect(err).toBeDefined();
+    });
+
+    test('throw error when poll does not exists', async () => {
+      const query = pollVoted('id_that_do_not_exists');
+      const err = await getFunctionThrowedError(() => request(query));
+
+      expect(err).toBeDefined();
     });
   });
 

@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import {
   Resolver,
   Query,
@@ -41,7 +42,7 @@ export default class PollResolver {
 
     const responseData = {
       id: poll.id,
-      userId: poll.userId,
+      userId: poll.userId.toString(),
       creationTime: poll.creationTime,
       question: poll.question,
       options: poll.options
@@ -65,7 +66,7 @@ export default class PollResolver {
         id: poll._id,
         options: poll.options,
         question: poll.question,
-        userId: poll.userId
+        userId: poll.userId.toString()
       })
     );
 
@@ -77,6 +78,31 @@ export default class PollResolver {
     const count = await Poll.estimatedDocumentCount();
 
     return count;
+  }
+
+  @Query(() => Boolean, { name: 'pollVoted' })
+  @UseMiddleware(isAuth)
+  async isPollVotedByUser(
+    @Arg('id') pollId: string,
+    @Ctx() ctx: IContext
+  ): Promise<boolean> {
+    let poll: IPollModel | null = null;
+
+    try {
+      poll = await Poll.findById(pollId, 'votedBy').lean();
+    } catch (err) {
+      throw new ArgumentValidationError([new PollDoesNotExistsError()]);
+    }
+
+    if (!poll) {
+      throw new ArgumentValidationError([new PollDoesNotExistsError()]);
+    }
+
+    const isVoted = poll.votedBy.some(
+      user => user.toString() === ctx.payload?.userId
+    );
+
+    return isVoted;
   }
 
   @FieldResolver(() => GQLUser, { name: 'user' })
@@ -101,11 +127,16 @@ export default class PollResolver {
     const pollData: Omit<IPollDataModel, 'creationTime' | 'votedBy'> = {
       question: pollInput.question,
       options,
-      userId: ctx.payload!.userId!
+      userId: new Types.ObjectId(ctx.payload!.userId!)
     };
 
     const { creationTime, id } = await Poll.create(pollData);
-    const responseData = { ...pollData, creationTime, id };
+    const responseData = {
+      ...pollData,
+      creationTime,
+      id,
+      userId: ctx.payload!.userId!
+    };
 
     return responseData;
   }
@@ -155,7 +186,7 @@ export default class PollResolver {
     }
 
     poll.options[optionIndex].votes++;
-    poll.votedBy.push(ctx.payload?.userId!);
+    poll.votedBy.push(new Types.ObjectId(ctx.payload?.userId!));
     await poll.save();
 
     return 'Voted';

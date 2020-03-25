@@ -1,11 +1,11 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, Types, model, Document } from 'mongoose';
 
 export interface IPollDataModel {
-  userId: string;
+  userId: Types.ObjectId;
   creationTime: Date;
   question: string;
   options: IPollOption[];
-  votedBy: string[];
+  votedBy: Types.ObjectId[];
 }
 
 export interface IPollOption {

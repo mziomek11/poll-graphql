@@ -39,3 +39,9 @@ export const pollsCount = `
     pollsCount
   }
 `;
+
+export const pollVoted = (pollId: string) => `
+  query {
+    pollVoted(id: "${pollId}")
+  }
+`;
