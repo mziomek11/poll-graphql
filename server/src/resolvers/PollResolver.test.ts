@@ -24,7 +24,7 @@ afterAll(async () => {
 
 describe('PollResolver', () => {
   describe('getPoll', () => {
-    test('returns poll and user data', async () => {
+    test('returns poll, user data and total votes', async () => {
       const pollData = {
         question: 'Example question',
         options: [
@@ -44,6 +44,7 @@ describe('PollResolver', () => {
       expect(res.poll.userId).toEqual(userId);
       expect(res.poll.user.id).toBe(userId);
       expect(res.poll.user.username).toBe(username);
+      expect(res.poll.totalVotes).toBe(25);
     });
 
     test('throw error when poll does not exists', async () => {

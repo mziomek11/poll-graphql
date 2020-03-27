@@ -113,6 +113,11 @@ export default class PollResolver {
     return ctx.userLoader.load(userId);
   }
 
+  @FieldResolver(() => Int, { name: 'totalVotes' })
+  async getPollTotalVotes(@Root() { options }: GQLPoll): Promise<number> {
+    return options.reduce((prev, curr) => prev + curr.votes, 0);
+  }
+
   @Mutation(() => GQLPoll)
   @UseMiddleware(isAuth)
   async createPoll(

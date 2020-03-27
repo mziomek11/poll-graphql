@@ -11,7 +11,8 @@ export const poll = (id: string) => `
       user{
         id,
         username
-      }
+      },
+      totalVotes
     }
   }
 `;
