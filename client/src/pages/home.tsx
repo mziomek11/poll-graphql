@@ -5,7 +5,7 @@ import Pagination from '@material-ui/lab/Pagination';
 import { makeStyles } from '@material-ui/core/styles';
 
 import PollList from '../components/poll/list/List';
-import TripleGrid from '../components/grid/Triple';
+import PageGrid from '../components/grid/Page';
 import useQuery from '../hooks/useQuery';
 import { getPollsAndCount, GetPollsData } from '../graphql/queries';
 import { ResponseListPoll } from '../graphql/types';
@@ -68,7 +68,7 @@ const HomePage = () => {
   };
 
   return (
-    <TripleGrid>
+    <PageGrid>
       <Box component="main" textAlign="center">
         <PollList polls={polls} loading={loading} pollsPerPage={pollsPerPage} />
 
@@ -79,7 +79,7 @@ const HomePage = () => {
           onChange={handlePaginationChange}
         />
       </Box>
-    </TripleGrid>
+    </PageGrid>
   );
 };
 

@@ -37,3 +37,9 @@ export const createPoll = (data: { question: string; options: string[] }) => `
     }
   }
 `;
+
+export const vote = (data: { id: string; option: string }) => `
+  mutation {
+    vote(id: "${data.id}", option: "${data.option}")
+  }
+`;

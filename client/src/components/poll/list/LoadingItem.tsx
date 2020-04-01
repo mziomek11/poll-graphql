@@ -1,25 +1,15 @@
 import React from 'react';
 
-import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
 
-import ListPaper from './Paper';
+import PollLoadingPaper from '../LoadingPaper';
 
-const LoadingItem = () => {
+const PollListLoadingItem = () => {
   return (
     <Box component="li" textAlign="left" mb={2}>
-      <ListPaper>
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          height={52}
-        >
-          <CircularProgress />
-        </Box>
-      </ListPaper>
+      <PollLoadingPaper />
     </Box>
   );
 };
 
-export default LoadingItem;
+export default PollListLoadingItem;

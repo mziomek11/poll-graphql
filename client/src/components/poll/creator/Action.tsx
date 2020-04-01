@@ -13,7 +13,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CreatorAction: React.FC<Props> = ({ children, onClick }) => {
+const PollCreatorAction: React.FC<Props> = ({ children, onClick }) => {
   const classes = useStyles();
 
   return (
@@ -23,4 +23,4 @@ const CreatorAction: React.FC<Props> = ({ children, onClick }) => {
   );
 };
 
-export default CreatorAction;
+export default PollCreatorAction;

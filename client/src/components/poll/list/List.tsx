@@ -20,7 +20,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const List: React.FC<Props> = ({ polls, loading, pollsPerPage }) => {
+const PollList: React.FC<Props> = ({ polls, loading, pollsPerPage }) => {
   const classes = useStyles();
 
   return (
@@ -34,4 +34,4 @@ const List: React.FC<Props> = ({ polls, loading, pollsPerPage }) => {
   );
 };
 
-export default List;
+export default PollList;

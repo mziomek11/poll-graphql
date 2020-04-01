@@ -1,5 +1,7 @@
 export function createFetchImplementation(jsonResult: any) {
-  return () => Promise.resolve({ json: () => Promise.resolve(jsonResult) });
+  return jest.fn(() =>
+    Promise.resolve({ json: () => Promise.resolve(jsonResult) })
+  );
 }
 
 export function createArgumentError(

@@ -3,7 +3,7 @@ import React from 'react';
 import Box from '@material-ui/core/Box';
 
 import PageHeading from '../components/heading/Page';
-import TripleGrid from '../components/grid/Triple';
+import FormPageGrid from '../components/grid/FormPage';
 import AuthUsernameTextField from '../components/auth/UsernameTextField';
 import AuthEmailTextField from '../components/auth/EmailTextField';
 import AuthPasswordTextField from '../components/auth/PasswordTextField';
@@ -45,7 +45,7 @@ const RegisterPage = () => {
   return (
     <Box component="main" textAlign="center">
       <PageHeading>Create account</PageHeading>
-      <TripleGrid>
+      <FormPageGrid>
         <form onSubmit={handleSubmit}>
           <AuthUsernameTextField
             onChange={handleChange}
@@ -74,7 +74,7 @@ const RegisterPage = () => {
           <AuthButton loading={loading}>Create</AuthButton>
           <AuthRedirectText text="Already have an account? Login" to="/login" />
         </form>
-      </TripleGrid>
+      </FormPageGrid>
     </Box>
   );
 };

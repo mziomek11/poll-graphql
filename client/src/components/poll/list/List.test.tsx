@@ -13,7 +13,7 @@ const renderPollList = (overrideProps: Partial<PollListProps> = {}) => {
     polls: new Array(pollsPerPage).fill(0).map((_, i) => ({
       id: `poll${i}`,
       question: `Question ${i}`,
-      options: [{ votes: 10 }, { votes: 20 }],
+      totalVotes: 30,
       creationTime: '2020-03-24T12:05:09.793Z',
       user: { username: 'bob' }
     })),
@@ -40,11 +40,5 @@ describe('Component PollList', () => {
     for (let i = 0; i < pollsPerPage; i++) {
       expect(getByText(`Question ${i}`)).toBeTruthy();
     }
-  });
-
-  test('votes are properly calculated', () => {
-    const { getAllByText } = renderPollList({ loading: false });
-
-    expect(getAllByText('30').length).toBe(pollsPerPage);
   });
 });

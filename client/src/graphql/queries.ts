@@ -6,13 +6,48 @@ export const getPollsAndCount = (data: GetPollsData) => `
       id,
       question,
       creationTime,
-      options{
-        votes
-      },
+      totalVotes,
       user{
         username
       }
     },
     pollsCount
+  }
+`;
+
+export const getPoll = (data: { id: string }) => `
+  query {
+    poll(id: "${data.id}"){
+      id,
+      question,
+      creationTime,
+      options{
+        votes,
+        text
+      },
+      totalVotes,
+      user{
+        username
+      }
+    }
+  }
+`;
+
+export const getPollAndCheckIsVoted = (data: { id: string }) => `
+  query {
+    poll(id: "${data.id}"){
+      id,
+      question,
+      creationTime,
+      options{
+        votes,
+        text
+      },
+      totalVotes,
+      user{
+        username
+      }
+    },
+    pollVoted(id: "${data.id}")
   }
 `;

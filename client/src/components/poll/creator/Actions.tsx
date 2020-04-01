@@ -2,14 +2,14 @@ import React from 'react';
 
 import Action from './Action';
 
-type Props = {
+export type Props = {
   isOptionCurrentlyBeingUpdated: boolean;
   onCancelClick: VoidFunction;
   onUpdateClick: VoidFunction;
   onAddClick: VoidFunction;
 };
 
-const CreatorActions: React.FC<Props> = ({
+const PollCreatorActions: React.FC<Props> = ({
   isOptionCurrentlyBeingUpdated,
   onCancelClick,
   onAddClick,
@@ -25,4 +25,4 @@ const CreatorActions: React.FC<Props> = ({
   );
 };
 
-export default CreatorActions;
+export default PollCreatorActions;

@@ -3,13 +3,13 @@ import React, {
   useRef,
   useCallback,
   KeyboardEvent,
-  ChangeEvent
+  ChangeEvent,
+  Fragment
 } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import TripleGrid from '../../grid/Triple';
 import LoadableButton from '../../buttons/Loadable';
 import CustomTextField from '../../text-field/Custom';
 import CreatorOptions from './Options';
@@ -55,7 +55,7 @@ const initialState: State = {
   optionCurrentlyBeingUpdated: null
 };
 
-const Creator = () => {
+const PollCreator = () => {
   const history = useHistory();
   const query = useQuery<ResponseData>(createPoll);
   const classes = useStyles();
@@ -164,7 +164,7 @@ const Creator = () => {
   }, []);
 
   return (
-    <TripleGrid>
+    <Fragment>
       <CustomTextField
         value={question}
         onChange={handleChange}
@@ -213,8 +213,8 @@ const Creator = () => {
           Create poll
         </LoadableButton>
       </div>
-    </TripleGrid>
+    </Fragment>
   );
 };
 
-export default Creator;
+export default PollCreator;

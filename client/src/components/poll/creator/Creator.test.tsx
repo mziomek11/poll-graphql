@@ -63,14 +63,6 @@ describe('Component PollCreator', () => {
     expect(queryByText('Options')).toBeNull();
   });
 
-  test('render Add option button and not render update buttons', () => {
-    const { getByText, queryByText } = renderCreator();
-
-    expect(getByText('Add option')).toBeTruthy();
-    expect(queryByText('Update')).toBeNull();
-    expect(queryByText('Cancel')).toBeNull();
-  });
-
   describe('adding', () => {
     test('reset option input value after add', () => {
       const { optionInput } = renderCreatorAndAddOption();

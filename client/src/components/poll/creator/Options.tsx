@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CreatorOptions: React.FC<Props> = ({
+const PollCreatorOptions: React.FC<Props> = ({
   options,
   optionCurrentlyBeingUpdated,
   ...onClickProps
@@ -50,4 +50,4 @@ const CreatorOptions: React.FC<Props> = ({
   );
 };
 
-export default memo(CreatorOptions);
+export default memo(PollCreatorOptions);

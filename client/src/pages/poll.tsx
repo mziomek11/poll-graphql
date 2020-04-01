@@ -1,9 +1,20 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+
+import PageGrid from '../components/grid/Page';
+import Poll from '../components/poll/single/Poll';
+import PollLoadingPaper from '../components/poll/LoadingPaper';
+import { PollProvider, PollContext } from '../context/poll';
 
 const PollPage = () => {
-  const params = useParams<{ id: string }>();
-  return <main>{params.id}</main>;
+  return (
+    <PageGrid component="main">
+      <PollProvider>
+        <PollContext.Consumer>
+          {props => (props.poll ? <Poll /> : <PollLoadingPaper />)}
+        </PollContext.Consumer>
+      </PollProvider>
+    </PageGrid>
+  );
 };
 
 export default PollPage;

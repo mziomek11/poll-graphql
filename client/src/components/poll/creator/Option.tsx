@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 
+import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -11,12 +12,12 @@ import DeleteIcon from '@material-ui/icons/Delete';
 
 import { OnClickProps } from './Options';
 
-type Props = {
+export type Props = {
   content: string;
   isCurrentlyBeingUpdated: boolean;
 } & OnClickProps;
 
-const CreatorOption: React.FC<Props> = ({
+const PollCreatorOption: React.FC<Props> = ({
   content,
   isCurrentlyBeingUpdated,
   onDeleteClick,
@@ -34,7 +35,10 @@ const CreatorOption: React.FC<Props> = ({
           button
           onClick={isCurrentlyBeingUpdated ? onCancelClick : handleUpdateClick}
         >
-          <ListItemText primary={content} />
+          <Box mr={2}>
+            <ListItemText primary={content} />
+          </Box>
+
           <ListItemSecondaryAction>
             {!isCurrentlyBeingUpdated && (
               <Tooltip title="Delete">
@@ -50,4 +54,4 @@ const CreatorOption: React.FC<Props> = ({
   );
 };
 
-export default CreatorOption;
+export default PollCreatorOption;
