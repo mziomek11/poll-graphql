@@ -29,9 +29,7 @@ const SinglePollResultsButtons = () => {
             Voting
           </Button>
         ) : (
-          <Typography variant="body2" color="secondary">
-            {loggedOutMessage}
-          </Typography>
+          <Typography variant="body2">{loggedOutMessage}</Typography>
         )}
       </Box>
     </Box>
