@@ -12,6 +12,7 @@ import AuthButton from '../components/auth/Button';
 import AuthRedirectText from '../components/auth/RedirectText';
 
 import useToken from '../hooks/useToken';
+import useOpenAlert from '../hooks/useOpenAlert';
 import useGraphqlForm from '../hooks/useGraphqlForm';
 import { register } from '../graphql/mutations';
 import { AuthResponse } from '../graphql/types';
@@ -27,6 +28,7 @@ const initialValues: RegisterData = {
 };
 
 const RegisterPage = () => {
+  const openAlert = useOpenAlert();
   const { setToken } = useToken();
   const {
     errors,
@@ -38,7 +40,10 @@ const RegisterPage = () => {
     initialValues,
     initialValues,
     ({ confirmPassword, ...rest }) => register(rest),
-    res => setToken(res.register.token),
+    res => {
+      setToken(res.register.token);
+      openAlert('Your account has been created!', 'success');
+    },
     validateRegister
   );
 
