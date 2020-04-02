@@ -20,6 +20,7 @@ const App = () => {
             <PublicRoute exact path="/login" component={login} />
             <ProtectedRoute exact path="/create" component={create} />
             <Route exact path="/poll/:id" component={poll} />
+            <Route exact path="/page/:page" component={home} />
             <Route exact path="/" component={home} />
             <Route path="/" component={notFound} />
           </Switch>

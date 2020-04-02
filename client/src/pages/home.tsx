@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { isNumber } from 'util';
 
 import Box from '@material-ui/core/Box';
 import Pagination from '@material-ui/lab/Pagination';
@@ -10,6 +12,7 @@ import useQuery from '../hooks/useQuery';
 import { getPollsAndCount, GetPollsData } from '../graphql/queries';
 import { ResponseListPoll } from '../graphql/types';
 
+type Params = { page?: string };
 export type Response = { polls: ResponseListPoll[]; pollsCount: number };
 type State = {
   polls: ResponseListPoll[];
@@ -30,6 +33,8 @@ const useStyles = makeStyles(theme => ({
 export const pollsPerPage = 10;
 
 const HomePage = () => {
+  const params = useParams<Params>();
+  const history = useHistory();
   const mounted = useRef(true);
   const classes = useStyles();
   const query = useQuery<Response, any, GetPollsData>(getPollsAndCount);
@@ -42,17 +47,7 @@ const HomePage = () => {
 
   const { page, loading, polls, pollsCount } = state;
 
-  const changePage = async (page: number) => {
-    const res = await query({ page, perPage: pollsPerPage });
-    if (mounted.current && res.data) {
-      setState({ ...state, ...res.data, loading: false, page });
-      window.scrollTo({ top: 0 });
-    }
-  };
-
   useEffect(() => {
-    changePage(1);
-
     return () => {
       mounted.current = false;
     };
@@ -60,11 +55,34 @@ const HomePage = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handlePaginationChange = (_: any, val: number) => {
-    if (!loading && val !== page) {
-      setState({ ...state, loading: true });
-      changePage(val);
+  useEffect(() => {
+    let pageToFetch = 1;
+    const paramsPage = params.page;
+
+    if (paramsPage) {
+      const parsedParamsPage = parseInt(paramsPage);
+      if (isNumber(parsedParamsPage) && parsedParamsPage > 0) {
+        pageToFetch = parsedParamsPage;
+      }
     }
+
+    setState(prevState => ({ ...prevState, loading: true, page: pageToFetch }));
+    query({ page: pageToFetch, perPage: pollsPerPage }).then(res => {
+      if (mounted.current && res.data) {
+        setState(prevState => ({
+          ...prevState,
+          ...res.data,
+          loading: false
+        }));
+        window.scrollTo({ top: 0 });
+      }
+    });
+
+    // eslint-disable-next-line
+  }, [params.page]);
+
+  const handlePaginationChange = (_: any, val: number) => {
+    if (!loading && val !== page) history.push(`/page/${val}`);
   };
 
   return (

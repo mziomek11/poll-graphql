@@ -63,6 +63,12 @@ describe('Component PollCreator', () => {
     expect(queryByText('Options')).toBeNull();
   });
 
+  test('render Add option button', () => {
+    const { getByText } = renderCreator();
+
+    expect(getByText('Add option')).toBeTruthy();
+  });
+
   describe('adding', () => {
     test('reset option input value after add', () => {
       const { optionInput } = renderCreatorAndAddOption();
@@ -75,12 +81,6 @@ describe('Component PollCreator', () => {
 
       expect(utils.getByText('Options')).toBeTruthy();
       expect(utils.getByText(optionText)).toBeTruthy();
-    });
-
-    test('added option has delete button', () => {
-      const { utils } = renderCreatorAndAddOption();
-
-      expect(utils.getByTitle('Delete')).toBeTruthy();
     });
 
     test('add multiple options', () => {
@@ -111,18 +111,10 @@ describe('Component PollCreator', () => {
   });
 
   describe('updating', () => {
-    test('render update buttons and not render Add option', () => {
+    test('render Update button', () => {
       const { utils } = renderCreatorAndAddAndClickOption();
 
-      expect(utils.queryByText('Add option')).toBeNull();
       expect(utils.getByText('Update')).toBeTruthy();
-      expect(utils.getByText('Cancel')).toBeTruthy();
-    });
-
-    test('not render delete button', () => {
-      const { utils } = renderCreatorAndAddAndClickOption();
-
-      expect(utils.queryByTitle('Delete')).toBeNull();
     });
 
     test('input content changes to option content', () => {
@@ -132,13 +124,11 @@ describe('Component PollCreator', () => {
     });
 
     describe('cancel click', () => {
-      test('render update Add option and not render update buttons', () => {
+      test('render Add option button', () => {
         const { utils } = renderCreatorAndAddAndClickOption();
         fireEvent.click(utils.getByText('Cancel'));
 
         expect(utils.getByText('Add option')).toBeTruthy();
-        expect(utils.queryByText('Update')).toBeNull();
-        expect(utils.queryByText('Cancel')).toBeNull();
       });
 
       test('input content is cleared', () => {
@@ -153,24 +143,15 @@ describe('Component PollCreator', () => {
         fireEvent.click(utils.getByText('Cancel'));
 
         expect(utils.getByText(optionText)).toBeTruthy();
-      });
-
-      test('render delete button', () => {
-        const { utils } = renderCreatorAndAddAndClickOption();
-        fireEvent.click(utils.getByText('Cancel'));
-
-        expect(utils.getByTitle('Delete')).toBeTruthy();
       });
     });
 
     describe('second option click', () => {
-      test('render update Add option and not render update buttons', () => {
+      test('render Add option', () => {
         const { utils } = renderCreatorAndAddAndClickOption();
         fireEvent.click(utils.getByText(optionText));
 
         expect(utils.getByText('Add option')).toBeTruthy();
-        expect(utils.queryByText('Update')).toBeNull();
-        expect(utils.queryByText('Cancel')).toBeNull();
       });
 
       test('input content is cleared', () => {
@@ -185,13 +166,6 @@ describe('Component PollCreator', () => {
         fireEvent.click(utils.getByText(optionText));
 
         expect(utils.getByText(optionText)).toBeTruthy();
-      });
-
-      test('render delete button', () => {
-        const { utils } = renderCreatorAndAddAndClickOption();
-        fireEvent.click(utils.getByText(optionText));
-
-        expect(utils.getByTitle('Delete')).toBeTruthy();
       });
     });
 
@@ -213,14 +187,12 @@ describe('Component PollCreator', () => {
         expect(utils.getByText(newValue)).toBeTruthy();
       });
 
-      test('render update Add option and not render update buttons', () => {
+      test('render Add option button', () => {
         const { utils, optionInput } = renderCreatorAndAddAndClickOption();
         fireEvent.change(optionInput, { target: { value: newValue } });
         fireEvent.click(utils.getByText('Update'));
 
         expect(utils.getByText('Add option')).toBeTruthy();
-        expect(utils.queryByText('Update')).toBeNull();
-        expect(utils.queryByText('Cancel')).toBeNull();
       });
 
       test('render error when validation fails', () => {
