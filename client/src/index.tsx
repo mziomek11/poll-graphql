@@ -10,4 +10,4 @@ if (!process.env.REACT_APP_GRAPHQL_SERVER) {
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
-serviceWorker.unregister();
+serviceWorker.register();
