@@ -15,10 +15,10 @@ export async function startServer() {
   const apolloServer = await createApolloServer();
   apolloServer.applyMiddleware({ app });
 
-  const server = app.listen(process.env.SERVER_PORT);
+  const server = app.listen(process.env.PORT);
 
   if (process.env.NODE_ENV === 'development') {
-    console.log(`Server listening on port ${process.env.SERVER_PORT}`);
+    console.log(`Server listening on port ${process.env.PORT}`);
   }
 
   return { app, server, apolloServer, connection };

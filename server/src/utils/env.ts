@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 export const setupEnvVariables = () => {
   config();
-  const expectedVariables = ['SERVER_PORT', 'AUTH_SECRET_KEY'];
+  const expectedVariables = ['PORT', 'AUTH_SECRET_KEY'];
 
   expectedVariables.forEach(variable => {
     if (!process.env[variable]) {
