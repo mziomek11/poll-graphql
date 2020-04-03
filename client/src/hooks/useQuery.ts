@@ -1,6 +1,5 @@
 import useToken from './useToken';
 
-const fetchURL = `${process.env.REACT_APP_GRAPHQL_SERVER}/graphql`;
 export const authErrMessage =
   'Access denied! You need to be authorized to perform this action!';
 
@@ -12,7 +11,7 @@ export default function<ResData = any, Errors = any, ReqData = any>(
     const query =
       typeof gqlString === 'string' ? gqlString : gqlString(data as ReqData);
 
-    const res = await fetch(fetchURL, {
+    const res = await fetch(process.env.REACT_APP_GRAPHQL_SERVER!, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
