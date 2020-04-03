@@ -10,7 +10,7 @@ import { vote } from '../../../graphql/mutations';
 
 const SinglePollVote = () => {
   const { poll, updatePollContext } = usePoll();
-  const { id, options } = poll!;
+  const { id, totalVotes, options } = poll!;
 
   const query = useQuery(vote);
   const [option, setOption] = useState(options[0].text);
@@ -32,7 +32,7 @@ const SinglePollVote = () => {
       updatePollContext({
         showVoteSection: false,
         canVote: false,
-        poll: { ...poll!, options: newOptions }
+        poll: { ...poll!, options: newOptions, totalVotes: totalVotes + 1 }
       });
     }
   };
