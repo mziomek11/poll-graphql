@@ -1,6 +1,6 @@
 # graphql-poll
 
-> GraphQL poll app
+> Application for creating polls that uses GraphQL.
 
 ## Table of contents
 
