@@ -16,3 +16,4 @@ I created this application to learn something about using graphql on server side
 - React
 - Typescript
 - GraphQL
+- Express
